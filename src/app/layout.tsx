@@ -6,6 +6,11 @@ import TopBar from "@/components/TopBar";
 export const metadata: Metadata = {
   title: "FinanceDataHub — Gouvernance Data & IA",
   description: "Plateforme de gouvernance des données et IA — FrontierBank 2026",
+  icons: {
+    icon: "/icon",
+    shortcut: "/icon",
+    apple: "/icon",
+  },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
