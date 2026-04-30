@@ -1,8 +1,10 @@
+// src/components/TopBar.tsx
 "use client";
 
 import { usePathname } from "next/navigation";
 import { T, badge } from "@/lib/theme";
 import { Bell, Settings, Calendar } from "lucide-react";
+import PhaseSelector from "./PhaseSelector";
 
 const PAGE_TITLES: Record<string, { title: string; desc: string }> = {
   "/":              { title: "Vue d'ensemble",       desc: "Dashboard exécutif — Programme Gouvernance Data & IA · FrontierBank" },
@@ -16,9 +18,9 @@ const PAGE_TITLES: Record<string, { title: string; desc: string }> = {
 };
 
 const btnStyle: React.CSSProperties = {
-  width: 32, height: 32, borderRadius: 8, border: `1px solid ${T.cardBorder}`,
-  background: T.cardBg, display: "flex", alignItems: "center", justifyContent: "center",
-  cursor: "pointer",
+  width: 32, height: 32, borderRadius: 8,
+  border: `1px solid ${T.cardBorder}`, background: T.cardBg,
+  display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer",
 };
 
 export default function TopBar() {
@@ -28,19 +30,29 @@ export default function TopBar() {
   return (
     <header style={{
       height: 56, display: "flex", alignItems: "center", justifyContent: "space-between",
-      padding: "0 28px", background: T.topbarBg, borderBottom: `1px solid ${T.cardBorder}`,
-      flexShrink: 0,
+      padding: "0 28px", background: T.topbarBg,
+      borderBottom: `1px solid ${T.cardBorder}`, flexShrink: 0, gap: 16,
     }}>
-      <div>
+      {/* Titre page */}
+      <div style={{ minWidth: 0, flexShrink: 0 }}>
         <h1 style={{ fontSize: 15, fontWeight: 700, color: T.textPrimary, fontFamily: "'Kanit', sans-serif", margin: 0 }}>
           {meta.title}
         </h1>
         <p style={{ fontSize: 11, color: T.textMuted, fontFamily: "'Kanit', sans-serif", margin: 0 }}>{meta.desc}</p>
       </div>
-      <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+
+      {/* Phase selector — centre */}
+      <div style={{ flex: 1, display: "flex", justifyContent: "center" }}>
+        <PhaseSelector />
+      </div>
+
+      {/* Actions droite */}
+      <div style={{ display: "flex", alignItems: "center", gap: 10, flexShrink: 0 }}>
         <div style={{ display: "flex", alignItems: "center", gap: 6, padding: "5px 12px", borderRadius: 8, background: T.cardBg, border: `1px solid ${T.cardBorder}` }}>
           <Calendar size={12} color={T.textMuted} />
-          <span style={{ fontSize: 12, fontWeight: 500, color: T.textSecondary, fontFamily: "'Kanit', sans-serif" }}>30 Avril 2026</span>
+          <span style={{ fontSize: 12, fontWeight: 500, color: T.textSecondary, fontFamily: "'Kanit', sans-serif" }}>
+            30 Avril 2026
+          </span>
         </div>
         <span style={badge(T.blueSoft, T.blue, T.blueBorder)}>v1.0</span>
         <button style={btnStyle}><Bell size={13} color={T.textMuted} /></button>
