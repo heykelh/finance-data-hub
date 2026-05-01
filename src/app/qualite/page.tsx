@@ -463,11 +463,12 @@ export default function QualitePage() {
         </div>
         <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
           {qualityBcbs.map(p => {
-            const cfg = {
+            const cfgMap = {
               compliant:     { Icon: CheckCircle2,  color: T.green, bg: T.greenSoft, border: T.greenBorder, label: "Conforme"     },
               partial:       { Icon: AlertTriangle, color: T.amber, bg: T.amberSoft, border: T.amberBorder, label: "Partiel"      },
               non_compliant: { Icon: XCircle,       color: T.red,   bg: T.redSoft,   border: T.redBorder,   label: "Non conforme" },
-            }[p.status];
+            };
+            const cfg = cfgMap[p.status as keyof typeof cfgMap];
             const { Icon } = cfg;
             const dim = DQ_DIMENSIONS.find(d => d.bcbs.includes(p.id));
             return (
