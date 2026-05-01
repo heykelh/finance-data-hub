@@ -99,6 +99,35 @@ body {
 
 @media (max-width: 639px) {
   #main-scroll {
-    padding: 12px !important;
+    padding: 10px !important;
+  }
+
+  /* Textes plus petits sur mobile */
+  body {
+    font-size: 13px;
+  }
+
+  /* Toutes les grilles passent en 1 colonne */
+  [style*="grid-template-columns"] {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Les tableaux scrollent horizontalement */
+  table {
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+
+  /* Les cards ont moins de padding */
+  .card,
+  [style*="border-radius: 14px"],
+  [style*="border-radius: 12px"] {
+    padding: 14px !important;
+  }
+
+  /* Le bandeau hero moins haut */
+  [style*="heroGrad"] {
+    padding: 16px !important;
   }
 }
