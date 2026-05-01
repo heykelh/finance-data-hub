@@ -6,7 +6,11 @@ import {
   RadarChart, Radar, PolarGrid, PolarAngleAxis, ResponsiveContainer,
   LineChart, Line, XAxis, YAxis, Tooltip, CartesianGrid, Legend
 } from "recharts";
-import { TrendingUp, AlertTriangle, CheckCircle2, ShieldCheck, Brain, Activity, Info } from "lucide-react";
+import {
+  TrendingUp, AlertTriangle, CheckCircle2, ShieldCheck,
+  Brain, Activity, Info, Users, FileText, Database,
+  GitBranch, Award, LayoutGrid
+} from "lucide-react";
 
 const ROAD_STATUS = {
   done:        { label: "Terminé",  color: T.green,  bg: T.greenSoft,  border: T.greenBorder },
@@ -104,6 +108,158 @@ export default function DashboardPage() {
           </div>
         </div>
       </div>
+
+      {/* ── Descriptif mission ── */}
+<div style={{ ...card(), padding: 0, overflow: "hidden" }}>
+  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr" }}>
+
+    {/* Colonne 1 — Contexte mission */}
+    <div style={{ padding: 24, borderRight: `1px solid ${T.cardBorder}` }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 14 }}>
+        <div style={{ width: 32, height: 32, borderRadius: 8, background: T.blueSoft, display: "flex", alignItems: "center", justifyContent: "center" }}>
+          <FileText size={15} color={T.blue} />
+        </div>
+        <p style={{ fontSize: 11, fontWeight: 700, color: T.blue, textTransform: "uppercase", letterSpacing: "0.07em", margin: 0, fontFamily: "'Kanit', sans-serif" }}>
+          Contexte de la Mission
+        </p>
+      </div>
+      <p style={{ fontSize: 13, color: T.textPrimary, fontWeight: 600, marginBottom: 8, fontFamily: "'Kanit', sans-serif", lineHeight: 1.4 }}>
+        FrontierBank — Banque de taille intermédiaire sous surveillance prudentielle BCE
+      </p>
+      <p style={{ fontSize: 12, color: T.textSecondary, lineHeight: 1.7, margin: 0, fontFamily: "'Kanit', sans-serif" }}>
+        FrontierBank fait face à une inspection de la BCE dans 18 mois. Son dispositif de gouvernance des données est insuffisant :
+        aucun principe BCBS 239 n'est conforme, les données critiques ne sont pas tracées, et les modèles IA sont déployés sans cadre de validation.
+        La banque mandate un cabinet de conseil pour piloter la transformation complète de sa maturité data.
+      </p>
+    </div>
+
+    {/* Colonne 2 — Rôle du consultant */}
+    <div style={{ padding: 24, borderRight: `1px solid ${T.cardBorder}` }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 14 }}>
+        <div style={{ width: 32, height: 32, borderRadius: 8, background: T.greenSoft, display: "flex", alignItems: "center", justifyContent: "center" }}>
+          <Users size={15} color={T.green} />
+        </div>
+        <p style={{ fontSize: 11, fontWeight: 700, color: T.green, textTransform: "uppercase", letterSpacing: "0.07em", margin: 0, fontFamily: "'Kanit', sans-serif" }}>
+          Rôle du Consultant Data & IA
+        </p>
+      </div>
+      <p style={{ fontSize: 13, color: T.textPrimary, fontWeight: 600, marginBottom: 8, fontFamily: "'Kanit', sans-serif', lineHeight: 1.4" }}>
+        Heykel HACHICHE — Consultant Data & IA · Cabinet de conseil
+      </p>
+      <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+        {[
+          "Piloter le programme de gouvernance data de A à Z sur 12 mois",
+          "Animer les ateliers métiers, IT et conformité pour aligner les parties prenantes",
+          "Produire les livrables : diagnostics, frameworks, politiques, roadmaps",
+          "Assurer la conformité BCBS 239, DAMA-DMBOK et EU AI Act",
+          "Présenter l'avancement au Comex et préparer l'inspection BCE",
+        ].map((item, i) => (
+          <div key={i} style={{ display: "flex", alignItems: "flex-start", gap: 8 }}>
+            <div style={{ width: 5, height: 5, borderRadius: "50%", background: T.green, marginTop: 6, flexShrink: 0 }} />
+            <span style={{ fontSize: 12, color: T.textSecondary, lineHeight: 1.5, fontFamily: "'Kanit', sans-serif" }}>{item}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+
+    {/* Colonne 3 — Ce que couvre ce site */}
+    <div style={{ padding: 24 }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 14 }}>
+        <div style={{ width: 32, height: 32, borderRadius: 8, background: T.purpleSoft, display: "flex", alignItems: "center", justifyContent: "center" }}>
+          <LayoutGrid size={15} color={T.purple} />
+        </div>
+        <p style={{ fontSize: 11, fontWeight: 700, color: T.purple, textTransform: "uppercase", letterSpacing: "0.07em", margin: 0, fontFamily: "'Kanit', sans-serif" }}>
+          Ce que couvre ce site
+        </p>
+      </div>
+      <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+        {[
+          { label: "Diagnostic",   desc: "Maturité DAMA-DMBOK · 8 domaines · Scores et gaps",         color: T.blue   },
+          { label: "Gouvernance",  desc: "Rôles · RACI · Politiques · Comité de gouvernance",          color: T.indigo },
+          { label: "Data Catalog", desc: "Glossaire · Datasets certifiés · Référentiel Snowflake",     color: T.amber  },
+          { label: "Data Quality", desc: "4 KPIs · BCBS 239 · Plans de remédiation par domaine",       color: T.green  },
+          { label: "Data Lineage", desc: "Graphe flux · Systèmes sources → reporting réglementaire",   color: T.purple },
+          { label: "IA Governance",desc: "EU AI Act · Registre modèles · Drift monitoring",            color: T.red    },
+          { label: "Comex Report", desc: "Synthèse exécutive · Budget · ROI · Décisions DG",           color: T.slate  },
+        ].map(item => (
+          <div key={item.label} style={{ display: "flex", alignItems: "center", gap: 8 }}>
+            <div style={{ width: 6, height: 6, borderRadius: "50%", background: item.color, flexShrink: 0 }} />
+            <span style={{ fontSize: 12, fontWeight: 700, color: T.textPrimary, fontFamily: "'Kanit', sans-serif", minWidth: 90 }}>{item.label}</span>
+            <span style={{ fontSize: 11, color: T.textMuted, fontFamily: "'Kanit', sans-serif" }}>{item.desc}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+
+  </div>
+</div>
+
+      {/* ── Ce qui a été fait concrètement ── */}
+<div style={card()}>
+  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 20 }}>
+    <div>
+      <p style={{ fontSize: 11, fontWeight: 700, color: T.textPrimary, textTransform: "uppercase", letterSpacing: "0.07em", fontFamily: "'Kanit', sans-serif" }}>
+        Ce qui a été fait concrètement — Phase {state.phase}
+      </p>
+      <p style={{ fontSize: 12, color: T.textMuted, marginTop: 3, fontFamily: "'Kanit', sans-serif" }}>
+        Actions réalisées, livrables produits et décisions prises depuis le démarrage du programme
+      </p>
+    </div>
+    <span style={badge(T.blueSoft, T.blue, T.blueBorder)}>Phase {state.phase} · {state.label}</span>
+  </div>
+
+  <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 16 }}>
+    {{
+      1: [
+        { titre: "Diagnostic de maturité réalisé", detail: "Entretiens menés avec 6 directions. Score de maturité initial établi à 1.0/5. Identification des 14 données critiques BCBS 239 non tracées.", color: T.blue, icon: Activity },
+        { titre: "Cartographie AS-IS des systèmes", detail: "Inventaire des 5 systèmes sources (T24, Murex, SAP, Salesforce, Bloomberg). Flux ETL identifiés mais non documentés. 0% de lineage.", color: T.purple, icon: GitBranch },
+        { titre: "Note de cadrage Comex", detail: "Présentation du diagnostic à la Direction Générale. Validation du programme 12 mois et du budget de 2,4M€. Nomination du CDO.", color: T.green, icon: FileText },
+      ],
+      2: [
+        { titre: "Rôles data formalisés", detail: "CDO nommé. 6 Data Owners désignés (un par direction). 6 Data Stewards recrutés. Charte de Gouvernance Data signée par le Comex.", color: T.blue, icon: Users },
+        { titre: "Comité de Gouvernance lancé", detail: "1ère réunion mensuelle tenue. Ordre du jour type défini. Reporting KPIs data instauré. 4 principes BCBS 239 passent conformes.", color: T.green, icon: ShieldCheck },
+        { titre: "Politiques data rédigées", detail: "Politique de Gouvernance v2.1, Standard de Classification v1.0 et Politique RGPD v2.0 validées et diffusées aux 6 directions.", color: T.amber, icon: FileText },
+      ],
+      3: [
+        { titre: "Collibra déployé", detail: "Data catalog opérationnel. 120 termes métier certifiés dans le glossaire. Scan automatique des 2 400 tables Snowflake configuré.", color: T.blue, icon: Database },
+        { titre: "Contrôles qualité automatisés", detail: "1 200 tests dbt et Great Expectations déployés sur les données critiques. KPI qualité moyen passe de 64% à 82% en 6 mois.", color: T.green, icon: TrendingUp },
+        { titre: "DWH Snowflake opérationnel", detail: "Architecture gold/silver/raw déployée. 12 datasets certifiés. Premiers dashboards Power BI Risk et Finance alimentés par le DWH.", color: T.purple, icon: Database },
+      ],
+      4: [
+        { titre: "MDM Semarchy déployé", detail: "3,1M clients dédupliqués. Golden record unifié entre CRM, Core Banking et Risques. Cohérence données Clients : 71% → 91%.", color: T.green, icon: Database },
+        { titre: "Lineage BCBS 239 complet", detail: "14 données critiques tracées de bout en bout (source → régulateur). Pipeline COREP/FINREP automatisé vers la BCE. Délai : 48h → 4h.", color: T.blue, icon: GitBranch },
+        { titre: "10/14 principes BCBS conformes", detail: "Validation par l'équipe Conformité. Rapport BCBS 239 signé et transmis à la BCE. Inspection dans 6 mois abordée avec confiance.", color: T.amber, icon: ShieldCheck },
+      ],
+      5: [
+        { titre: "Registre IA complet", detail: "5 modèles inventoriés, classifiés EU AI Act et documentés. 3 modèles Risque Élevé avec supervision humaine obligatoire activée.", color: T.purple, icon: Brain },
+        { titre: "Monitoring drift opérationnel", detail: "Alertes automatiques configurées sur les 5 modèles. FraudDetector identifié en drift critique (3.7% > seuil 2.5%) → réentraînement lancé.", color: T.red, icon: Activity },
+        { titre: "13/14 principes BCBS conformes", detail: "Quasi-conformité atteinte. Accuracy moyenne des modèles IA : 83% → 93% grâce à la meilleure qualité des données d'entraînement.", color: T.green, icon: TrendingUp },
+      ],
+      6: [
+        { titre: "BCBS 239 : 14/14 conformes", detail: "Conformité totale validée lors de l'inspection BCE. Zéro finding majeur. FrontierBank peut reconstituer tout indicateur de risque en < 2h.", color: T.green, icon: ShieldCheck },
+        { titre: "400 collaborateurs formés", detail: "Programme Data Literacy déployé sur toutes les directions. 45 Data Stewards formés et autonomes. Culture data ancrée dans l'organisation.", color: T.blue, icon: Users },
+        { titre: "Maturité data : 4.0/5", detail: "Niveau Géré atteint sur 6/8 domaines. Programme clôturé avec succès. ROI estimé à 3,2x sur 3 ans. FrontierBank est autonome sur la gouvernance data.", color: T.amber, icon: Award },
+      ],
+    }[state.phase]?.map((item: { titre: string; detail: string; color: string; icon: any }, i: number) => {
+      const Icon = item.icon;
+      return (
+        <div key={i} style={{ background: "#f9fafd", border: `1px solid ${T.cardBorder}`, borderRadius: 12, padding: 18, borderTop: `3px solid ${item.color}` }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 10 }}>
+            <div style={{ width: 32, height: 32, borderRadius: 8, background: `${item.color}18`, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+              <Icon size={15} color={item.color} />
+            </div>
+            <p style={{ fontSize: 13, fontWeight: 700, color: T.textPrimary, margin: 0, fontFamily: "'Kanit', sans-serif", lineHeight: 1.3 }}>
+              {item.titre}
+            </p>
+          </div>
+          <p style={{ fontSize: 12, color: T.textSecondary, lineHeight: 1.7, margin: 0, fontFamily: "'Kanit', sans-serif" }}>
+            {item.detail}
+          </p>
+        </div>
+      );
+    })}
+  </div>
+</div>
 
       {/* ── 4 KPI cards ── */}
       <div style={S.row4}>

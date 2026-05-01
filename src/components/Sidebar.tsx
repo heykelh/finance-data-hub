@@ -80,7 +80,7 @@ export default function Sidebar() {
           <div style={{ width: 7, height: 7, borderRadius: "50%", background: "#0e9f6e" }} />
           <span style={{ fontSize: 11, color: "rgba(255,255,255,0.35)", fontFamily: "'Kanit', sans-serif" }}>Mission active</span>
         </div>
-        <p style={{ fontSize: 13, fontWeight: 600, color: "rgba(255,255,255,0.7)", fontFamily: "'Kanit', sans-serif" }}>Michel Dupont</p>
+        <p style={{ fontSize: 13, fontWeight: 600, color: "rgba(255,255,255,0.7)", fontFamily: "'Kanit', sans-serif" }}>Heykel HACHICHE</p>
         <p style={{ fontSize: 11, color: "rgba(255,255,255,0.3)", fontFamily: "'Kanit', sans-serif" }}>Consultant Data & IA</p>
       </div>
     </aside>

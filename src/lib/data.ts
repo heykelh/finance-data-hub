@@ -1,7 +1,7 @@
 // src/lib/data.ts
 export const PROJECT_META = {
   client: "FrontierBank",
-  consultant: "Michel Dupont",
+  consultant: "Heykel HACHICHE",
   title: "Programme de Gouvernance Data & IA",
   subtitle: "BCBS 239 · DAMA-DMBOK · EU AI Act",
   version: "v1.0 — Avril 2026",
