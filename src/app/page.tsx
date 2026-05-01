@@ -289,11 +289,12 @@ export default function DashboardPage() {
         </div>
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
           {bcbsPrinciples.map(p => {
-            const cfg = {
+            const cfgMap = {
               compliant:     { Icon: CheckCircle2,  color: T.green, bg: T.greenSoft, border: T.greenBorder, label: "Conforme"     },
               partial:       { Icon: AlertTriangle, color: T.amber, bg: T.amberSoft, border: T.amberBorder, label: "Partiel"      },
               non_compliant: { Icon: AlertTriangle, color: T.red,   bg: T.redSoft,   border: T.redBorder,   label: "Non conforme" },
-            }[p.status];
+            };
+            const cfg = cfgMap[p.status as keyof typeof cfgMap];
             const { Icon } = cfg;
             return (
               <div key={p.id} style={{ display: "flex", alignItems: "center", gap: 12, padding: "12px 16px", borderRadius: 10, background: cfg.bg, border: `1px solid ${cfg.border}`, transition: "all 0.4s ease" }}>
