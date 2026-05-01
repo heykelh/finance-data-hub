@@ -1,10 +1,10 @@
-// src/components/TopBar.tsx
 "use client";
 
 import { usePathname } from "next/navigation";
 import { T, badge } from "@/lib/theme";
 import { Bell, Settings, Calendar } from "lucide-react";
 import PhaseSelector from "./PhaseSelector";
+import { useResponsive } from "@/lib/useResponsive";
 
 const PAGE_TITLES: Record<string, { title: string; desc: string }> = {
   "/":              { title: "Vue d'ensemble",       desc: "Dashboard exécutif — Programme Gouvernance Data & IA · FrontierBank" },
@@ -26,37 +26,48 @@ const btnStyle: React.CSSProperties = {
 export default function TopBar() {
   const path = usePathname();
   const meta = PAGE_TITLES[path] ?? { title: "FinanceDataHub", desc: "" };
+  const { isMobile, isTablet } = useResponsive();
+  const isNarrow = isMobile || isTablet;
 
   return (
     <header style={{
       height: 56, display: "flex", alignItems: "center", justifyContent: "space-between",
-      padding: "0 28px", background: T.topbarBg,
-      borderBottom: `1px solid ${T.cardBorder}`, flexShrink: 0, gap: 16,
+      padding: isNarrow ? "0 12px 0 60px" : "0 28px",
+      background: T.topbarBg,
+      borderBottom: `1px solid ${T.cardBorder}`, flexShrink: 0, gap: 12,
     }}>
-      {/* Titre page */}
-      <div style={{ minWidth: 0, flexShrink: 0 }}>
-        <h1 style={{ fontSize: 15, fontWeight: 700, color: T.textPrimary, fontFamily: "'Kanit', sans-serif", margin: 0 }}>
+      {/* Titre */}
+      <div style={{ minWidth: 0, flexShrink: 1 }}>
+        <h1 style={{ fontSize: isNarrow ? 13 : 15, fontWeight: 700, color: T.textPrimary, fontFamily: "'Kanit', sans-serif", margin: 0, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
           {meta.title}
         </h1>
-        <p style={{ fontSize: 11, color: T.textMuted, fontFamily: "'Kanit', sans-serif", margin: 0 }}>{meta.desc}</p>
+        {!isMobile && (
+          <p style={{ fontSize: 11, color: T.textMuted, fontFamily: "'Kanit', sans-serif", margin: 0, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+            {meta.desc}
+          </p>
+        )}
       </div>
 
-      {/* Phase selector — centre */}
-      <div style={{ flex: 1, display: "flex", justifyContent: "center" }}>
-        <PhaseSelector />
-      </div>
+      {/* Phase selector */}
+      {!isMobile && (
+        <div style={{ flex: 1, display: "flex", justifyContent: "center" }}>
+          <PhaseSelector />
+        </div>
+      )}
 
       {/* Actions droite */}
-      <div style={{ display: "flex", alignItems: "center", gap: 10, flexShrink: 0 }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 6, padding: "5px 12px", borderRadius: 8, background: T.cardBg, border: `1px solid ${T.cardBorder}` }}>
-          <Calendar size={12} color={T.textMuted} />
-          <span style={{ fontSize: 12, fontWeight: 500, color: T.textSecondary, fontFamily: "'Kanit', sans-serif" }}>
-            30 Avril 2026
-          </span>
-        </div>
+      <div style={{ display: "flex", alignItems: "center", gap: 8, flexShrink: 0 }}>
+        {!isMobile && (
+          <div style={{ display: "flex", alignItems: "center", gap: 6, padding: "5px 12px", borderRadius: 8, background: T.cardBg, border: `1px solid ${T.cardBorder}` }}>
+            <Calendar size={12} color={T.textMuted} />
+            <span style={{ fontSize: 12, fontWeight: 500, color: T.textSecondary, fontFamily: "'Kanit', sans-serif" }}>
+              30 Avril 2026
+            </span>
+          </div>
+        )}
         <span style={badge(T.blueSoft, T.blue, T.blueBorder)}>v1.0</span>
-        <button style={btnStyle}><Bell size={13} color={T.textMuted} /></button>
-        <button style={btnStyle}><Settings size={13} color={T.textMuted} /></button>
+        {!isMobile && <button style={btnStyle}><Bell size={13} color={T.textMuted} /></button>}
+        {!isMobile && <button style={btnStyle}><Settings size={13} color={T.textMuted} /></button>}
       </div>
     </header>
   );

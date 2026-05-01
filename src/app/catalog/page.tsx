@@ -1,6 +1,7 @@
 "use client";
 
 import { useProjectStore } from "@/lib/useProjectState";
+import { useResponsive } from "@/lib/useResponsive";
 import { T, badge, card } from "@/lib/theme";
 import {
   Database, Search, BookOpen, Tag, CheckCircle2,
@@ -96,6 +97,7 @@ function getSchemaCfg(schema: string) {
 // ── page ─────────────────────────────────────────────────────────────────────
 export default function CatalogPage() {
   const { state } = useProjectStore();
+  const { cols, pad } = useResponsive();
   const [searchGlossaire, setSearchGlossaire] = useState("");
   const [searchDataset, setSearchDataset]     = useState("");
   const [filterDomaine, setFilterDomaine]     = useState("Tous");
@@ -137,7 +139,7 @@ export default function CatalogPage() {
   };
 
   return (
-    <div style={{ maxWidth: 1100, margin: "0 auto", display: "flex", flexDirection: "column", gap: 24 }}>
+    <div style={{ maxWidth: 1100, margin: "0 auto", display: "flex", flexDirection: "column", gap: 24, padding: pad }}>
 
       {/* ── Bandeau ── */}
       <div style={{ background: T.heroGrad, borderRadius: 14, padding: 28 }}>
@@ -171,7 +173,7 @@ export default function CatalogPage() {
       </div>
 
       {/* ── KPIs ── */}
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 16 }}>
+      <div style={{ display: "grid", gridTemplateColumns: cols(4, 2, 1), gap: 16 }}>
         {[
           { icon: BookOpen,     iconBg: T.blueSoft,   iconColor: T.blue,
             value: `${certifies}/${visibleGlossaire.length}`,

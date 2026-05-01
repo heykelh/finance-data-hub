@@ -1,6 +1,7 @@
 "use client";
 
 import { useProjectStore } from "@/lib/useProjectState";
+import { useResponsive } from "@/lib/useResponsive";
 import { T, badge, card } from "@/lib/theme";
 import {
   CheckCircle2, AlertTriangle, Clock, Users, FileText,
@@ -277,6 +278,7 @@ const COMITE_AGENDA = [
 // ── page ─────────────────────────────────────────────────────────────────────
 export default function GouvernancePage() {
   const { state } = useProjectStore();
+  const { cols, pad } = useResponsive();
 
   const isActive = (phase: number) => state.phase >= phase;
   const currentRaci = RACI_BY_PHASE[state.phase];
@@ -284,7 +286,7 @@ export default function GouvernancePage() {
   const politiquesDraft   = POLITIQUES.filter(p => state.phase <  p.phase_creation);
 
   return (
-    <div style={{ maxWidth: 1100, margin: "0 auto", display: "flex", flexDirection: "column", gap: 24 }}>
+    <div style={{ maxWidth: 1100, margin: "0 auto", display: "flex", flexDirection: "column", gap: 24, padding: pad }}>
 
       {/* ── Bandeau ── */}
       <div style={{ background: T.heroGrad, borderRadius: 14, padding: 28 }}>
@@ -333,7 +335,7 @@ export default function GouvernancePage() {
           </span>
         </div>
 
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 16 }}>
+        <div style={{ display: "grid", gridTemplateColumns: cols(3, 2, 1), gap: 16 }}>
           {ROLES_CONFIG.map(role => {
             const active = isActive(role.phase_activation);
             const Icon = role.icon;
@@ -537,7 +539,7 @@ export default function GouvernancePage() {
           </div>
         </div>
 
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 14 }}>
+        <div style={{ display: "grid", gridTemplateColumns: cols(3, 2, 1), gap: 16 }}>
           {POLITIQUES.map(pol => {
             const active = state.phase >= pol.phase_creation;
             const Icon = pol.icon;

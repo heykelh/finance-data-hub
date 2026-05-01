@@ -1,6 +1,7 @@
 "use client";
 
 import { useProjectStore } from "@/lib/useProjectState";
+import { useResponsive } from "@/lib/useResponsive";
 import { T, badge, card } from "@/lib/theme";
 import {
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip,
@@ -192,6 +193,7 @@ function TrendIcon({ current, prev }: { current: number; prev: number }) {
 // ── page ─────────────────────────────────────────────────────────────────────
 export default function QualitePage() {
   const { state, bcbsPrinciples } = useProjectStore();
+  const { cols, pad } = useResponsive();
 
   // Scores dynamiques selon phase
   const phaseMultiplier = { 1: 0.78, 2: 0.84, 3: 1.0, 4: 1.10, 5: 1.14, 6: 1.17 }[state.phase] ?? 1;
@@ -215,7 +217,7 @@ export default function QualitePage() {
   const qualityBcbs = bcbsPrinciples.filter(p => [3,4,5,6,8,12,13].includes(p.id));
 
   return (
-    <div style={{ maxWidth: 1100, margin: "0 auto", display: "flex", flexDirection: "column", gap: 24 }}>
+    <div style={{ maxWidth: 1100, margin: "0 auto", display: "flex", flexDirection: "column", gap: 24, padding: pad }}>
 
       {/* ── Bandeau ── */}
       <div style={{ background: T.heroGrad, borderRadius: 14, padding: 28 }}>
@@ -246,7 +248,7 @@ export default function QualitePage() {
       </div>
 
       {/* ── 4 jauges dimensions ── */}
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 16 }}>
+      <div style={{ display: "grid", gridTemplateColumns: cols(4, 2, 1), gap: 16 }}>
         {DQ_DIMENSIONS.map(dim => {
           const current = lastKpi[dim.key];
           const prev    = state.kpis.length > 1 ? state.kpis[state.kpis.length - 2][dim.key] : current;
@@ -595,7 +597,7 @@ export default function QualitePage() {
           </div>
 
           {/* Étapes — grisées si non démarré */}
-          <div style={{ padding: "12px 20px 14px", display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 8, background: T.cardBg }}>
+          <div style={{ padding: "12px 20px 14px", display: "grid", gridTemplateColumns: cols(4, 2, 2), gap: 8, background: T.cardBg }}>
             {plan.etapes.map((e, i) => {
               // Étape "faite" si pct dépasse le seuil de l'étape
               const etapeDone = status.pct >= (i + 1) * 25;

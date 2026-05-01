@@ -1,6 +1,7 @@
 "use client";
 
 import { useProjectStore } from "@/lib/useProjectState";
+import { useResponsive } from "@/lib/useResponsive";
 import { T, badge, card } from "@/lib/theme";
 import {
   Brain, ShieldCheck, AlertTriangle, CheckCircle2,
@@ -236,6 +237,7 @@ const ChartTooltip = ({ active, payload, label }: any) => {
 // ── page ─────────────────────────────────────────────────────────────────────
 export default function IAGovernancePage() {
   const { state } = useProjectStore();
+  const { cols, pad } = useResponsive();
 
   const currentStatuses  = STATUS_BY_PHASE[state.phase];
   const currentAccuracy  = ACCURACY_BY_PHASE[state.phase];
@@ -256,7 +258,7 @@ export default function IAGovernancePage() {
   }));
 
   return (
-    <div style={{ maxWidth: 1100, margin: "0 auto", display: "flex", flexDirection: "column", gap: 24 }}>
+    <div style={{ maxWidth: 1100, margin: "0 auto", display: "flex", flexDirection: "column", gap: 24, padding: pad }}>
 
       {/* ── Bandeau ── */}
       <div style={{ background: T.heroGrad, borderRadius: 14, padding: 28 }}>
@@ -290,7 +292,7 @@ export default function IAGovernancePage() {
       </div>
 
       {/* ── KPIs registre ── */}
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 16 }}>
+      <div style={{ display: "grid", gridTemplateColumns: cols(4, 2, 1), gap: 16 }}>
         {[
           { Icon: CheckCircle2, iconBg: T.greenSoft,  iconColor: T.green,
             value: `${validated}/5`, label: "Modèles validés", sub: "Conformes EU AI Act · Documentation complète",
@@ -334,7 +336,7 @@ export default function IAGovernancePage() {
           <span style={badge(T.purpleSoft, T.purple, T.purpleBorder)}>EU AI Act</span>
         </div>
 
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 14 }}>
+        <div style={{ display: "grid", gridTemplateColumns: cols(4, 2, 1), gap: 14 }}>
           {EU_AI_CLASSES.map(cls => (
             <div key={cls.level} style={{
               border: `1px solid ${cls.border}`,
@@ -441,7 +443,7 @@ export default function IAGovernancePage() {
                 </div>
 
                 {/* Body */}
-                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 0 }}>
+                <div style={{ display: "grid", gridTemplateColumns: cols(3, 1, 1), gap: 0 }}>
 
                   {/* Infos techniques */}
                   <div style={{ padding: "14px 20px", borderRight: `1px solid ${T.cardBorder}` }}>

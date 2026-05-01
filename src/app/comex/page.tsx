@@ -1,6 +1,7 @@
 "use client";
 
 import { useProjectStore } from "@/lib/useProjectState";
+import { useResponsive } from "@/lib/useResponsive";
 import { T, badge, card } from "@/lib/theme";
 import { ROADMAP } from "@/lib/data";
 import {
@@ -128,6 +129,7 @@ const ChartTooltip = ({ active, payload, label }: any) => {
 // ── page ─────────────────────────────────────────────────────────────────────
 export default function ComexPage() {
   const { state, maturityDomains, bcbsPrinciples, aiModels } = useProjectStore();
+  const { cols, pad } = useResponsive();
 
   const compliant    = bcbsPrinciples.filter(p => p.status === "compliant").length;
   const nonCompliant = bcbsPrinciples.filter(p => p.status === "non_compliant").length;
@@ -154,7 +156,7 @@ export default function ComexPage() {
   }));
 
   return (
-    <div style={{ maxWidth: 1100, margin: "0 auto", display: "flex", flexDirection: "column", gap: 24 }}>
+    <div style={{ maxWidth: 1100, margin: "0 auto", display: "flex", flexDirection: "column", gap: 24, padding: pad }}>
 
       {/* ── Bandeau Comex ── */}
       <div style={{ background: T.heroGrad, borderRadius: 14, padding: 32 }}>
@@ -189,7 +191,7 @@ export default function ComexPage() {
       </div>
 
       {/* ── Message clé + Risque + Décision attendue ── */}
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 16 }}>
+      <div style={{ display: "grid", gridTemplateColumns: cols(3, 1, 1), gap: 16 }}>
 
         {/* Message clé */}
         <div style={{ ...card(), borderTop: `3px solid ${T.blue}`, padding: 20 }}>
@@ -239,7 +241,7 @@ export default function ComexPage() {
       </div>
 
       {/* ── 4 KPIs exécutifs ── */}
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 16 }}>
+      <div style={{ display: "grid", gridTemplateColumns: cols(4, 2, 1), gap: 16 }}>
         {[
           {
             Icon: Activity, iconBg: T.blueSoft, iconColor: T.blue,
@@ -293,7 +295,7 @@ export default function ComexPage() {
       </div>
 
       {/* ── Radar maturité + Avancement programme ── */}
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 24 }}>
+      <div style={{ display: "grid", gridTemplateColumns: cols(2, 1, 1), gap: 24 }}>
 
         {/* Radar */}
         <div style={card()}>
@@ -542,7 +544,7 @@ export default function ComexPage() {
           </p>
         </div>
 
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
+        <div style={{ display: "grid", gridTemplateColumns: cols(2, 1, 1), gap: 8 }}>
           {bcbsPrinciples.map(p => {
             const cfgMap = {
               compliant:     { Icon: CheckCircle2,  color: T.green, bg: T.greenSoft, border: T.greenBorder, label: "Conforme"     },
@@ -582,7 +584,7 @@ export default function ComexPage() {
           <span style={badge(T.blueSoft, T.blue, T.blueBorder)}>Horizon 30 jours</span>
         </div>
 
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 14 }}>
+        <div style={{ display: "grid", gridTemplateColumns: cols(3, 2, 1), gap: 14 }}>
           {(state.phase < 6 ? ROADMAP[state.phase] : ROADMAP[5]).items.map((item, i) => (
             <div key={i} style={{ display: "flex", alignItems: "flex-start", gap: 10, padding: "12px 14px", borderRadius: 10, background: T.blueSoft, border: `1px solid ${T.blueBorder}` }}>
               <div style={{ width: 22, height: 22, borderRadius: "50%", background: T.blue, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, marginTop: 1 }}>

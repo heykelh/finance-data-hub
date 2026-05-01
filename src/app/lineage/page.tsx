@@ -1,6 +1,7 @@
 "use client";
 
 import { useProjectStore } from "@/lib/useProjectState";
+import { useResponsive } from "@/lib/useResponsive";
 import { T, badge, card } from "@/lib/theme";
 import { useEffect, useRef } from "react";
 import {
@@ -314,6 +315,7 @@ function LineageCanvas({ nodes, links, phase }: { nodes: LineageNode[]; links: L
 // ── page ─────────────────────────────────────────────────────────────────────
 export default function LineagePage() {
   const { state } = useProjectStore();
+  const { cols, pad } = useResponsive();
   const phase = state.phase;
 
   const visibleNodes = ALL_NODES.filter(n => n.phase_visible <= phase);
@@ -340,7 +342,7 @@ export default function LineagePage() {
   };
 
   return (
-    <div style={{ maxWidth: 1200, margin: "0 auto", display: "flex", flexDirection: "column", gap: 24 }}>
+    <div style={{ maxWidth: 1200, margin: "0 auto", display: "flex", flexDirection: "column", gap: 24, padding: pad }}>
 
       {/* ── Bandeau ── */}
       <div style={{ background: T.heroGrad, borderRadius: 14, padding: 28 }}>
@@ -371,7 +373,7 @@ export default function LineagePage() {
       </div>
 
       {/* ── KPIs ── */}
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 16 }}>
+      <div style={{ display: "grid", gridTemplateColumns: cols(4, 2, 1), gap: 16 }}>
         {[
           { icon: CheckCircle2, iconBg: T.greenSoft,  iconColor: T.green,
             value: `${documented}`, label: "Flux documentés",
@@ -494,7 +496,7 @@ export default function LineagePage() {
 
   {{
     1: (
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 16 }}>
+      <div style={{ display: "grid", gridTemplateColumns: cols(3, 1, 1), gap: 16 }}>
         {[
           {
             who: "Consultant Data",
@@ -562,7 +564,7 @@ export default function LineagePage() {
       </div>
     ),
     2: (
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 16 }}>
+      <div style={{ display: "grid", gridTemplateColumns: cols(3, 1, 1), gap: 16 }}>
         {[
           {
             who: "Consultant Data",
@@ -628,7 +630,7 @@ export default function LineagePage() {
       </div>
     ),
     3: (
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 16 }}>
+      <div style={{ display: "grid", gridTemplateColumns: cols(3, 1, 1), gap: 16 }}>
         {[
           {
             who: "Consultant Data",
@@ -694,7 +696,7 @@ export default function LineagePage() {
       </div>
     ),
     4: (
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 16 }}>
+      <div style={{ display: "grid", gridTemplateColumns: cols(3, 1, 1), gap: 16 }}>
         {[
           {
             who: "Consultant Data",
@@ -760,7 +762,7 @@ export default function LineagePage() {
       </div>
     ),
     5: (
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 16 }}>
+      <div style={{ display: "grid", gridTemplateColumns: cols(3, 1, 1), gap: 16 }}>
         {[
           {
             who: "Consultant Data",
@@ -826,7 +828,7 @@ export default function LineagePage() {
       </div>
     ),
     6: (
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 16 }}>
+      <div style={{ display: "grid", gridTemplateColumns: cols(3, 1, 1), gap: 16 }}>
         {[
           {
             who: "Consultant Data",
@@ -914,7 +916,7 @@ export default function LineagePage() {
             </div>
           </div>
 
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
+          <div style={{ display: "grid", gridTemplateColumns: cols(2, 1, 1), gap: 16 }}>
 
             {/* Nouveaux nœuds */}
             {newNodes.length > 0 && (
@@ -975,7 +977,7 @@ export default function LineagePage() {
                           </span>
                           <span style={badge(sCfg.bg, sCfg.color, sCfg.border)}>{sCfg.label}</span>
                         </div>
-                        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 8 }}>
+                        <div style={{ display: "grid", gridTemplateColumns: cols(3, 1, 1), gap: 8 }}>
                           {[
                             { l: "Volume",    v: link.volume    },
                             { l: "Fréquence", v: link.frequency },

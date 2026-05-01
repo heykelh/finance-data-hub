@@ -1,6 +1,7 @@
 "use client";
 
 import { useProjectStore } from "@/lib/useProjectState";
+import { useResponsive } from "@/lib/useResponsive";
 import { T, badge, card } from "@/lib/theme";
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip,
@@ -68,6 +69,7 @@ function GapBar({ score, target }: { score: number; target: number }) {
 // ── page ─────────────────────────────────────────────────────────────────────
 export default function DiagnosticPage() {
   const { maturityDomains, state } = useProjectStore();
+  const { cols, pad } = useResponsive();
 
   const avgScore  = (maturityDomains.reduce((a, d) => a + d.score,  0) / maturityDomains.length).toFixed(1);
   const avgTarget = (maturityDomains.reduce((a, d) => a + d.target, 0) / maturityDomains.length).toFixed(1);
@@ -109,7 +111,7 @@ export default function DiagnosticPage() {
         <p style={{ fontSize: 11, fontWeight: 700, color: T.textPrimary, textTransform: "uppercase", letterSpacing: "0.07em", marginBottom: 14, fontFamily: "'Kanit', sans-serif" }}>
           Référentiel de Maturité — Échelle DAMA-DMBOK
         </p>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(6, 1fr)", gap: 10 }}>
+        <div style={{ display: "grid", gridTemplateColumns: cols(6, 3, 2), gap: 10 }}>
           {DAMA_LEVELS.map(l => (
             <div key={l.level} style={{ background: l.bg, border: `1px solid ${l.color}33`, borderRadius: 10, padding: "12px 14px" }}>
               <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6 }}>
@@ -125,7 +127,7 @@ export default function DiagnosticPage() {
       </div>
 
       {/* ── Bar chart + Radar ── */}
-      <div style={{ display: "grid", gridTemplateColumns: "3fr 2fr", gap: 24 }}>
+      <div style={{ display: "grid", gridTemplateColumns: cols(2, 1, 1), gap: 24 }}>
 
         <div style={card()}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 20 }}>
@@ -238,7 +240,7 @@ export default function DiagnosticPage() {
                 </div>
 
                 {/* Actions */}
-                <div style={{ padding: "0 20px 14px", display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+                <div style={{ padding: "0 20px 14px", display: "grid", gridTemplateColumns: cols(2, 1, 1), gap: 12 }}>
                   <div>
                     <p style={{ fontSize: 11, fontWeight: 700, color: T.textSecondary, textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 8, fontFamily: "'Kanit', sans-serif" }}>Actions recommandées</p>
                     <div style={{ display: "flex", flexDirection: "column", gap: 5 }}>
@@ -270,7 +272,7 @@ export default function DiagnosticPage() {
         <p style={{ fontSize: 11, fontWeight: 700, color: T.textPrimary, textTransform: "uppercase", letterSpacing: "0.07em", marginBottom: 16, fontFamily: "'Kanit', sans-serif" }}>
           Synthèse des Priorités — Plan d'Action {state.period}
         </p>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 16 }}>
+        <div style={{ display: "grid", gridTemplateColumns: cols(3, 1, 1), gap: 16 }}>
           {(["critique", "haute", "moyenne"] as const).map(prio => {
             const cfg     = PRIORITY_CFG[prio];
             const domains = maturityDomains.filter(d => RECO[d.id]?.priority === prio);

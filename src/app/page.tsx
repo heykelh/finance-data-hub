@@ -1,6 +1,7 @@
 "use client";
 
 import { useProjectStore } from "@/lib/useProjectState";
+import { useResponsive } from "@/lib/useResponsive";
 import { T, badge, card } from "@/lib/theme";
 import {
   RadarChart, Radar, PolarGrid, PolarAngleAxis, ResponsiveContainer,
@@ -11,6 +12,7 @@ import {
   Brain, Activity, Info, Users, FileText, Database,
   GitBranch, Award, LayoutGrid
 } from "lucide-react";
+
 
 const ROAD_STATUS = {
   done:        { label: "Terminé",  color: T.green,  bg: T.greenSoft,  border: T.greenBorder },
@@ -50,6 +52,7 @@ function SectionHeader({ title, sub, right }: { title: string; sub: string; righ
 
 export default function DashboardPage() {
   const { state, maturityDomains, bcbsPrinciples, aiModels } = useProjectStore();
+  const { cols, pad, isMobile } = useResponsive();
 
   const compliant    = bcbsPrinciples.filter(p => p.status === "compliant").length;
   const partial      = bcbsPrinciples.filter(p => p.status === "partial").length;
@@ -64,10 +67,14 @@ export default function DashboardPage() {
   }));
 
   const S = {
-    page: { maxWidth: 1100, margin: "0 auto", display: "flex", flexDirection: "column" as const, gap: 24 },
-    card: card(),
-    row4: { display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 16 },
-    row6: { display: "grid", gridTemplateColumns: "repeat(6, 1fr)", gap: 14 },
+    page:  { maxWidth: 1100, margin: "0 auto", display: "flex", flexDirection: "column" as const, gap: 24, padding: pad },
+    card:  card(),
+    row4:  { display: "grid", gridTemplateColumns: cols(4, 2, 1), gap: 16 },
+    row6:  { display: "grid", gridTemplateColumns: cols(6, 3, 2), gap: 14 },
+    row2:  { display: "grid", gridTemplateColumns: cols(2, 1, 1), gap: 24 },
+    row3:  { display: "grid", gridTemplateColumns: cols(3, 1, 1), gap: 16 },
+    title: { fontSize: 11, fontWeight: 700, color: T.textPrimary, textTransform: "uppercase" as const, letterSpacing: "0.07em", fontFamily: "'Kanit', sans-serif" },
+    sub:   { fontSize: 12, color: T.textMuted, marginTop: 3, fontFamily: "'Kanit', sans-serif" },
     insight: (bg: string, border: string): React.CSSProperties => ({
       background: bg, border: `1px solid ${border}`, borderRadius: 8,
       padding: "10px 14px", display: "flex", gap: 8, marginTop: 14,
@@ -111,7 +118,7 @@ export default function DashboardPage() {
 
       {/* ── Descriptif mission ── */}
 <div style={{ ...card(), padding: 0, overflow: "hidden" }}>
-  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr" }}>
+  <div style={{ display: "grid", gridTemplateColumns: cols(3, 1, 1) }}>
 
     {/* Colonne 1 — Contexte mission */}
     <div style={{ padding: 24, borderRight: `1px solid ${T.cardBorder}` }}>
@@ -390,7 +397,7 @@ export default function DashboardPage() {
           sub="6 phases de transformation · Jan 2026 – Déc 2026 · Pilotée par le CDO et le cabinet de conseil"
           right={<span style={badge(T.blueSoft, T.blue, T.blueBorder)}>Phase {state.phase} active</span>}
         />
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(6, 1fr)", gap: 14 }}>
+        <div style={{ display: "grid", gridTemplateColumns: cols(6, 3, 2), gap: 14 }}>
           {ROADMAP.map((r, idx) => {
             const phaseState = idx + 1 < state.phase ? "done" : idx + 1 === state.phase ? "in_progress" : "planned";
             const s = ROAD_STATUS[phaseState];
@@ -443,7 +450,7 @@ export default function DashboardPage() {
             &nbsp;·&nbsp;Cible fin 2026 : <strong style={{ color: T.textPrimary }}>100%</strong>
           </p>
         </div>
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
+        <div style={{ display: "grid", gridTemplateColumns: cols(2, 1, 1), gap: 8 }}>
           {bcbsPrinciples.map(p => {
             const cfgMap = {
               compliant:     { Icon: CheckCircle2,  color: T.green, bg: T.greenSoft, border: T.greenBorder, label: "Conforme"     },
