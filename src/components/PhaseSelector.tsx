@@ -1,10 +1,8 @@
-// src/components/PhaseSelector.tsx
 "use client";
 
 import { useProjectStore } from "@/lib/useProjectState";
 import { TIMELINE } from "@/lib/timeline";
 import { T } from "@/lib/theme";
-import { CheckCircle2, Clock, Circle } from "lucide-react";
 
 export default function PhaseSelector() {
   const { currentPhase, setPhase } = useProjectStore();
@@ -18,8 +16,7 @@ export default function PhaseSelector() {
       {TIMELINE.map((p) => {
         const active = currentPhase === p.phase;
         const done   = p.status === "done";
-        const Icon   = done ? CheckCircle2 : p.status === "in_progress" ? Clock : Circle;
-        const color  = done ? T.green : p.status === "in_progress" ? T.blue : T.slate;
+        const color  = active ? T.blue : done ? T.green : T.slate;
 
         return (
           <button
@@ -27,7 +24,7 @@ export default function PhaseSelector() {
             onClick={() => setPhase(p.phase)}
             title={`${p.label} · ${p.period}`}
             style={{
-              display: "flex", alignItems: "center", gap: 5,
+              display: "flex", alignItems: "center", gap: 6,
               padding: "5px 10px", borderRadius: 7, cursor: "pointer",
               border: active ? `1px solid ${T.blueBorder}` : "1px solid transparent",
               background: active ? "white" : "transparent",
@@ -36,7 +33,13 @@ export default function PhaseSelector() {
               fontFamily: "'Kanit', sans-serif",
             }}
           >
-            <Icon size={12} color={active ? T.blue : color} />
+            {/* Rond simple — plein si actif, contour sinon */}
+            <div style={{
+              width: 10, height: 10, borderRadius: "50%", flexShrink: 0,
+              background: active ? T.blue : "transparent",
+              border: `2px solid ${color}`,
+              transition: "all 0.2s",
+            }} />
             <span style={{
               fontSize: 12, fontWeight: active ? 700 : 500,
               color: active ? T.blue : T.textSecondary,
