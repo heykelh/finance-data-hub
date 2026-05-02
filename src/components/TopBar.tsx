@@ -96,7 +96,7 @@ export default function TopBar() {
                 color: T.textSecondary,
                 fontFamily: "'Kanit', sans-serif",
               }}>
-                30 Avril 2026
+                2026
               </span>
             </div>
           )}
