@@ -1,8 +1,10 @@
 "use client";
 
 import { useProjectStore } from "@/lib/useProjectState";
-import { useResponsive } from "@/lib/useResponsive";
+import { useLang } from "@/lib/LanguageContext";
 import { T, badge, card } from "@/lib/theme";
+import { ROADMAP } from "@/lib/data";
+import { useResponsive } from "@/lib/useResponsive";
 import {
   RadarChart, Radar, PolarGrid, PolarAngleAxis, ResponsiveContainer,
   LineChart, Line, XAxis, YAxis, Tooltip, CartesianGrid, Legend
@@ -13,14 +15,11 @@ import {
   GitBranch, Award, LayoutGrid
 } from "lucide-react";
 
-
 const ROAD_STATUS = {
-  done:        { label: "Terminé",  color: T.green,  bg: T.greenSoft,  border: T.greenBorder },
-  in_progress: { label: "En cours", color: T.blue,   bg: T.blueSoft,   border: T.blueBorder  },
-  planned:     { label: "Planifié", color: T.slate,  bg: T.slateSoft,  border: T.slateBorder },
+  done:        { color: T.green,  bg: T.greenSoft,  border: T.greenBorder  },
+  in_progress: { color: T.blue,   bg: T.blueSoft,   border: T.blueBorder   },
+  planned:     { color: T.slate,  bg: T.slateSoft,  border: T.slateBorder  },
 };
-
-import { ROADMAP } from "@/lib/data";
 
 const PHASE_PCT: Record<number, string> = { 1: "8%", 2: "25%", 3: "50%", 4: "67%", 5: "83%", 6: "100%" };
 
@@ -52,6 +51,7 @@ function SectionHeader({ title, sub, right }: { title: string; sub: string; righ
 
 export default function DashboardPage() {
   const { state, maturityDomains, bcbsPrinciples, aiModels } = useProjectStore();
+  const { t } = useLang();
   const { cols, pad, isMobile } = useResponsive();
 
   const compliant    = bcbsPrinciples.filter(p => p.status === "compliant").length;
@@ -81,22 +81,86 @@ export default function DashboardPage() {
     }),
   };
 
+  // Données "Ce qui a été fait"
+  const DONE_BY_PHASE: Record<number, { titre: string; detail: string; color: string; icon: any }[]> = {
+    1: [
+      { titre: t.lang === "fr" ? "Diagnostic de maturité réalisé" : "Maturity assessment completed",         detail: t.lang === "fr" ? "Entretiens menés avec 6 directions. Score de maturité initial établi à 1.0/5. Identification des 14 données critiques BCBS 239 non tracées." : "Interviews conducted with 6 business units. Initial maturity score set at 1.0/5. 14 untraced BCBS 239 critical data assets identified.", color: T.blue, icon: Activity },
+      { titre: t.lang === "fr" ? "Cartographie AS-IS des systèmes" : "AS-IS system mapping",                 detail: t.lang === "fr" ? "Inventaire des 5 systèmes sources (T24, Murex, SAP, Salesforce, Bloomberg). Flux ETL identifiés mais non documentés. 0% de lineage." : "Inventory of 5 source systems (T24, Murex, SAP, Salesforce, Bloomberg). ETL flows identified but undocumented. 0% lineage coverage.", color: T.purple, icon: GitBranch },
+      { titre: t.lang === "fr" ? "Note de cadrage Comex" : "Board scoping note",                             detail: t.lang === "fr" ? "Présentation du diagnostic à la Direction Générale. Validation du programme 12 mois et du budget de 2,4M€. Nomination du CDO." : "Diagnostic presented to Senior Management. 12-month programme and €2.4M budget approved. CDO appointed.", color: T.green, icon: FileText },
+    ],
+    2: [
+      { titre: t.lang === "fr" ? "Rôles data formalisés" : "Data roles formalised",                         detail: t.lang === "fr" ? "CDO nommé. 6 Data Owners désignés (un par direction). 6 Data Stewards recrutés. Charte de Gouvernance Data signée par le Comex." : "CDO appointed. 6 Data Owners designated (one per unit). 6 Data Stewards recruited. Data Governance Charter signed by the Board.", color: T.blue, icon: Users },
+      { titre: t.lang === "fr" ? "Comité de Gouvernance lancé" : "Governance Committee launched",            detail: t.lang === "fr" ? "1ère réunion mensuelle tenue. Ordre du jour type défini. Reporting KPIs data instauré. 4 principes BCBS 239 passent conformes." : "1st monthly meeting held. Standard agenda defined. Data KPI reporting established. 4 BCBS 239 principles become compliant.", color: T.green, icon: ShieldCheck },
+      { titre: t.lang === "fr" ? "Politiques data rédigées" : "Data policies drafted",                       detail: t.lang === "fr" ? "Politique de Gouvernance v2.1, Standard de Classification v1.0 et Politique RGPD v2.0 validées et diffusées aux 6 directions." : "Governance Policy v2.1, Classification Standard v1.0 and GDPR Policy v2.0 validated and distributed to all 6 business units.", color: T.amber, icon: FileText },
+    ],
+    3: [
+      { titre: t.lang === "fr" ? "Collibra déployé" : "Collibra deployed",                                   detail: t.lang === "fr" ? "Data catalog opérationnel. 120 termes métier certifiés dans le glossaire. Scan automatique des 2 400 tables Snowflake configuré." : "Data catalog operational. 120 business terms certified in the glossary. Automatic scan of 2,400 Snowflake tables configured.", color: T.blue, icon: Database },
+      { titre: t.lang === "fr" ? "Contrôles qualité automatisés" : "Automated quality controls",             detail: t.lang === "fr" ? "1 200 tests dbt et Great Expectations déployés sur les données critiques. KPI qualité moyen passe de 64% à 82% en 6 mois." : "1,200 dbt and Great Expectations tests deployed on critical data. Average quality KPI rises from 64% to 82% in 6 months.", color: T.green, icon: TrendingUp },
+      { titre: t.lang === "fr" ? "DWH Snowflake opérationnel" : "Snowflake DWH operational",                 detail: t.lang === "fr" ? "Architecture gold/silver/raw déployée. 12 datasets certifiés. Premiers dashboards Power BI Risk et Finance alimentés par le DWH." : "Gold/silver/raw architecture deployed. 12 certified datasets. First Risk and Finance Power BI dashboards fed by the DWH.", color: T.purple, icon: Database },
+    ],
+    4: [
+      { titre: t.lang === "fr" ? "MDM Semarchy déployé" : "Semarchy MDM deployed",                           detail: t.lang === "fr" ? "3,1M clients dédupliqués. Golden record unifié entre CRM, Core Banking et Risques. Cohérence données Clients : 71% → 91%." : "3.1M customers deduplicated. Golden record unified across CRM, Core Banking and Risk. Customer data consistency: 71% → 91%.", color: T.green, icon: Database },
+      { titre: t.lang === "fr" ? "Lineage BCBS 239 complet" : "Complete BCBS 239 lineage",                   detail: t.lang === "fr" ? "14 données critiques tracées de bout en bout (source → régulateur). Pipeline COREP/FINREP automatisé vers la BCE. Délai : 48h → 4h." : "14 critical data assets traced end-to-end (source → regulator). COREP/FINREP pipeline automated to ECB. Delay: 48h → 4h.", color: T.blue, icon: GitBranch },
+      { titre: t.lang === "fr" ? "10/14 principes BCBS conformes" : "10/14 BCBS principles compliant",       detail: t.lang === "fr" ? "Validation par l'équipe Conformité. Rapport BCBS 239 signé et transmis à la BCE. Inspection dans 6 mois abordée avec confiance." : "Validated by the Compliance team. BCBS 239 report signed and submitted to ECB. Upcoming inspection in 6 months approached with confidence.", color: T.amber, icon: ShieldCheck },
+    ],
+    5: [
+      { titre: t.lang === "fr" ? "Registre IA complet" : "Complete AI registry",                             detail: t.lang === "fr" ? "5 modèles inventoriés, classifiés EU AI Act et documentés. 3 modèles Risque Élevé avec supervision humaine obligatoire activée." : "5 models inventoried, EU AI Act classified and documented. 3 High Risk models with mandatory human oversight activated.", color: T.purple, icon: Brain },
+      { titre: t.lang === "fr" ? "Monitoring drift opérationnel" : "Drift monitoring operational",           detail: t.lang === "fr" ? "Alertes automatiques configurées sur les 5 modèles. FraudDetector identifié en drift critique (3.7% > seuil 2.5%) → réentraînement lancé." : "Automatic alerts configured on all 5 models. FraudDetector identified in critical drift (3.7% > 2.5% threshold) → retraining launched.", color: T.red, icon: Activity },
+      { titre: t.lang === "fr" ? "13/14 principes BCBS conformes" : "13/14 BCBS principles compliant",       detail: t.lang === "fr" ? "Quasi-conformité atteinte. Accuracy moyenne des modèles IA : 83% → 93% grâce à la meilleure qualité des données d'entraînement." : "Near-compliance achieved. Average AI model accuracy: 83% → 93% thanks to improved training data quality.", color: T.green, icon: TrendingUp },
+    ],
+    6: [
+      { titre: t.lang === "fr" ? "BCBS 239 : 14/14 conformes" : "BCBS 239: 14/14 compliant",               detail: t.lang === "fr" ? "Conformité totale validée lors de l'inspection BCE. Zéro finding majeur. FrontierBank peut reconstituer tout indicateur de risque en < 2h." : "Full compliance validated at ECB inspection. Zero major findings. FrontierBank can reconstruct any risk indicator in < 2h.", color: T.green, icon: ShieldCheck },
+      { titre: t.lang === "fr" ? "400 collaborateurs formés" : "400 employees trained",                      detail: t.lang === "fr" ? "Programme Data Literacy déployé sur toutes les directions. 45 Data Stewards formés et autonomes. Culture data ancrée dans l'organisation." : "Data Literacy programme deployed across all business units. 45 Data Stewards trained and autonomous. Data culture embedded in the organisation.", color: T.blue, icon: Users },
+      { titre: t.lang === "fr" ? "Maturité data : 4.0/5" : "Data maturity: 4.0/5",                         detail: t.lang === "fr" ? "Niveau Géré atteint sur 6/8 domaines. Programme clôturé avec succès. ROI estimé à 3,2x sur 3 ans. FrontierBank est autonome sur la gouvernance data." : "Managed level reached on 6/8 domains. Programme successfully closed. Estimated ROI of 3.2x over 3 years. FrontierBank is autonomous on data governance.", color: T.amber, icon: Award },
+    ],
+  };
+
+  const doneItems = DONE_BY_PHASE[state.phase] ?? [];
+
+  // Badges KPI dynamiques
+  const maturityBadge = () => {
+    const v = parseFloat(avgMaturity);
+    if (v < 2) return { txt: t.dashboard.maturity_initial,  bg: T.amberSoft,  color: T.amber,  border: T.amberBorder  };
+    if (v < 3) return { txt: t.dashboard.maturity_progress, bg: T.blueSoft,   color: T.blue,   border: T.blueBorder   };
+    if (v < 4) return { txt: t.dashboard.maturity_defined,  bg: T.blueSoft,   color: T.blue,   border: T.blueBorder   };
+    return              { txt: t.dashboard.maturity_managed, bg: T.greenSoft,  color: T.green,  border: T.greenBorder  };
+  };
+  const bcbsBadge = () => {
+    if (compliant < 4)  return { txt: t.common.critical,     bg: T.redSoft,   color: T.red,   border: T.redBorder   };
+    if (compliant < 10) return { txt: t.common.in_progress,  bg: T.amberSoft, color: T.amber, border: T.amberBorder };
+    if (compliant < 14) return { txt: "Presque",             bg: T.greenSoft, color: T.green, border: T.greenBorder };
+    return                     { txt: t.common.compliant,    bg: T.greenSoft, color: T.green, border: T.greenBorder };
+  };
+  const qualityBadge = () => {
+    const q = state.stats.avgQuality;
+    if (q >= 90) return { txt: t.dashboard.objective_reached, bg: T.greenSoft, color: T.green, border: T.greenBorder };
+    if (q >= 80) return { txt: t.dashboard.maturity_progress, bg: T.blueSoft,  color: T.blue,  border: T.blueBorder  };
+    return               { txt: t.dashboard.to_improve,       bg: T.amberSoft, color: T.amber, border: T.amberBorder };
+  };
+
+  const mb = maturityBadge();
+  const bb = bcbsBadge();
+  const qb = qualityBadge();
+
   return (
     <div style={S.page}>
 
-      {/* ── Bandeau mission ── */}
+      {/* ── Bandeau hero ── */}
       <div style={{ background: T.heroGrad, borderRadius: 14, padding: 28 }}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 24 }}>
           <div>
             <p style={{ fontSize: 10, fontWeight: 700, color: "rgba(147,197,253,0.9)", letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: 10, fontFamily: "'Kanit', sans-serif" }}>
-              Programme en cours · FrontierBank
+              {t.dashboard.programme_label}
             </p>
             <h2 style={{ fontSize: 22, fontWeight: 800, color: "#f0f4ff", marginBottom: 8, fontFamily: "'Kanit', sans-serif", lineHeight: 1.2 }}>
-              Gouvernance Data & IA<br />
-              <span style={{ color: "#93c5fd" }}>BCBS 239 · DAMA-DMBOK · EU AI Act</span>
+              {t.dashboard.hero_title}<br />
+              <span style={{ color: "#93c5fd" }}>{t.dashboard.hero_subtitle}</span>
             </h2>
             <p style={{ fontSize: 13, color: "rgba(191,219,254,0.85)", fontFamily: "'Kanit', sans-serif" }}>
-              Mission de conseil · Phase {state.phase}/6 · {state.label} · {state.period}
+              {t.dashboard.hero_desc
+                .replace("{phase}", String(state.phase))
+                .replace("{label}", state.label)
+                .replace("{period}", state.period)}
             </p>
             <p style={{ fontSize: 12, color: "rgba(147,197,253,0.8)", marginTop: 8, fontStyle: "italic", fontFamily: "'Kanit', sans-serif", maxWidth: 560 }}>
               {state.narrative}
@@ -104,8 +168,8 @@ export default function DashboardPage() {
           </div>
           <div style={{ display: "flex", gap: 12, flexShrink: 0 }}>
             {[
-              { v: `Phase ${state.phase}`, l: "sur 6 phases" },
-              { v: pct,                    l: "avancement"   },
+              { v: `${t.common.phase} ${state.phase}`, l: t.common.on_6_phases },
+              { v: pct,                                 l: t.common.progress    },
             ].map(x => (
               <div key={x.l} style={{ background: "rgba(255,255,255,0.10)", border: "1px solid rgba(255,255,255,0.15)", borderRadius: 12, padding: "16px 22px", textAlign: "center" }}>
                 <p style={{ fontSize: 26, fontWeight: 800, color: "#f0f4ff", marginBottom: 2, fontFamily: "'Kanit', sans-serif" }}>{x.v}</p>
@@ -116,199 +180,123 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      {/* ── Descriptif mission ── */}
-<div style={{ ...card(), padding: 0, overflow: "hidden" }}>
-  <div style={{ display: "grid", gridTemplateColumns: cols(3, 1, 1) }}>
+      {/* ── Bloc mission ── */}
+      <div style={{ ...card(), padding: 0, overflow: "hidden" }}>
+        <div style={{ display: "grid", gridTemplateColumns: cols(3, 1, 1) }}>
 
-    {/* Colonne 1 — Contexte mission */}
-    <div style={{ padding: 24, borderRight: `1px solid ${T.cardBorder}` }}>
-      <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 14 }}>
-        <div style={{ width: 32, height: 32, borderRadius: 8, background: T.blueSoft, display: "flex", alignItems: "center", justifyContent: "center" }}>
-          <FileText size={15} color={T.blue} />
-        </div>
-        <p style={{ fontSize: 11, fontWeight: 700, color: T.blue, textTransform: "uppercase", letterSpacing: "0.07em", margin: 0, fontFamily: "'Kanit', sans-serif" }}>
-          Contexte de la Mission
-        </p>
-      </div>
-      <p style={{ fontSize: 13, color: T.textPrimary, fontWeight: 600, marginBottom: 8, fontFamily: "'Kanit', sans-serif", lineHeight: 1.4 }}>
-        FrontierBank — Banque de taille intermédiaire sous surveillance prudentielle BCE
-      </p>
-      <p style={{ fontSize: 12, color: T.textSecondary, lineHeight: 1.7, margin: 0, fontFamily: "'Kanit', sans-serif" }}>
-        FrontierBank fait face à une inspection de la BCE dans 18 mois. Son dispositif de gouvernance des données est insuffisant :
-        aucun principe BCBS 239 n'est conforme, les données critiques ne sont pas tracées, et les modèles IA sont déployés sans cadre de validation.
-        La banque mandate un cabinet de conseil pour piloter la transformation complète de sa maturité data.
-      </p>
-    </div>
-
-    {/* Colonne 2 — Rôle du consultant */}
-    <div style={{ padding: 24, borderRight: `1px solid ${T.cardBorder}` }}>
-      <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 14 }}>
-        <div style={{ width: 32, height: 32, borderRadius: 8, background: T.greenSoft, display: "flex", alignItems: "center", justifyContent: "center" }}>
-          <Users size={15} color={T.green} />
-        </div>
-        <p style={{ fontSize: 11, fontWeight: 700, color: T.green, textTransform: "uppercase", letterSpacing: "0.07em", margin: 0, fontFamily: "'Kanit', sans-serif" }}>
-          Rôle du Consultant Data & IA
-        </p>
-      </div>
-      <p style={{ fontSize: 13, color: T.textPrimary, fontWeight: 600, marginBottom: 8, fontFamily: "'Kanit', sans-serif', lineHeight: 1.4" }}>
-        Heykel HACHICHE — Consultant Data & IA · Cabinet de conseil
-      </p>
-      <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-        {[
-          "Piloter le programme de gouvernance data de A à Z sur 12 mois",
-          "Animer les ateliers métiers, IT et conformité pour aligner les parties prenantes",
-          "Produire les livrables : diagnostics, frameworks, politiques, roadmaps",
-          "Assurer la conformité BCBS 239, DAMA-DMBOK et EU AI Act",
-          "Présenter l'avancement au Comex et préparer l'inspection BCE",
-        ].map((item, i) => (
-          <div key={i} style={{ display: "flex", alignItems: "flex-start", gap: 8 }}>
-            <div style={{ width: 5, height: 5, borderRadius: "50%", background: T.green, marginTop: 6, flexShrink: 0 }} />
-            <span style={{ fontSize: 12, color: T.textSecondary, lineHeight: 1.5, fontFamily: "'Kanit', sans-serif" }}>{item}</span>
-          </div>
-        ))}
-      </div>
-    </div>
-
-    {/* Colonne 3 — Ce que couvre ce site */}
-    <div style={{ padding: 24 }}>
-      <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 14 }}>
-        <div style={{ width: 32, height: 32, borderRadius: 8, background: T.purpleSoft, display: "flex", alignItems: "center", justifyContent: "center" }}>
-          <LayoutGrid size={15} color={T.purple} />
-        </div>
-        <p style={{ fontSize: 11, fontWeight: 700, color: T.purple, textTransform: "uppercase", letterSpacing: "0.07em", margin: 0, fontFamily: "'Kanit', sans-serif" }}>
-          Ce que couvre ce site
-        </p>
-      </div>
-      <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-        {[
-          { label: "Diagnostic",   desc: "Maturité DAMA-DMBOK · 8 domaines · Scores et gaps",         color: T.blue   },
-          { label: "Gouvernance",  desc: "Rôles · RACI · Politiques · Comité de gouvernance",          color: T.indigo },
-          { label: "Data Catalog", desc: "Glossaire · Datasets certifiés · Référentiel Snowflake",     color: T.amber  },
-          { label: "Data Quality", desc: "4 KPIs · BCBS 239 · Plans de remédiation par domaine",       color: T.green  },
-          { label: "Data Lineage", desc: "Graphe flux · Systèmes sources → reporting réglementaire",   color: T.purple },
-          { label: "IA Governance",desc: "EU AI Act · Registre modèles · Drift monitoring",            color: T.red    },
-          { label: "Comex Report", desc: "Synthèse exécutive · Budget · ROI · Décisions DG",           color: T.slate  },
-        ].map(item => (
-          <div key={item.label} style={{ display: "flex", alignItems: "center", gap: 8 }}>
-            <div style={{ width: 6, height: 6, borderRadius: "50%", background: item.color, flexShrink: 0 }} />
-            <span style={{ fontSize: 12, fontWeight: 700, color: T.textPrimary, fontFamily: "'Kanit', sans-serif", minWidth: 90 }}>{item.label}</span>
-            <span style={{ fontSize: 11, color: T.textMuted, fontFamily: "'Kanit', sans-serif" }}>{item.desc}</span>
-          </div>
-        ))}
-      </div>
-    </div>
-
-  </div>
-</div>
-
-      {/* ── Ce qui a été fait concrètement ── */}
-<div style={card()}>
-  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 20 }}>
-    <div>
-      <p style={{ fontSize: 11, fontWeight: 700, color: T.textPrimary, textTransform: "uppercase", letterSpacing: "0.07em", fontFamily: "'Kanit', sans-serif" }}>
-        Ce qui a été fait concrètement — Phase {state.phase}
-      </p>
-      <p style={{ fontSize: 12, color: T.textMuted, marginTop: 3, fontFamily: "'Kanit', sans-serif" }}>
-        Actions réalisées, livrables produits et décisions prises depuis le démarrage du programme
-      </p>
-    </div>
-    <span style={badge(T.blueSoft, T.blue, T.blueBorder)}>Phase {state.phase} · {state.label}</span>
-  </div>
-
-  <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 16 }}>
-    {{
-      1: [
-        { titre: "Diagnostic de maturité réalisé", detail: "Entretiens menés avec 6 directions. Score de maturité initial établi à 1.0/5. Identification des 14 données critiques BCBS 239 non tracées.", color: T.blue, icon: Activity },
-        { titre: "Cartographie AS-IS des systèmes", detail: "Inventaire des 5 systèmes sources (T24, Murex, SAP, Salesforce, Bloomberg). Flux ETL identifiés mais non documentés. 0% de lineage.", color: T.purple, icon: GitBranch },
-        { titre: "Note de cadrage Comex", detail: "Présentation du diagnostic à la Direction Générale. Validation du programme 12 mois et du budget de 2,4M€. Nomination du CDO.", color: T.green, icon: FileText },
-      ],
-      2: [
-        { titre: "Rôles data formalisés", detail: "CDO nommé. 6 Data Owners désignés (un par direction). 6 Data Stewards recrutés. Charte de Gouvernance Data signée par le Comex.", color: T.blue, icon: Users },
-        { titre: "Comité de Gouvernance lancé", detail: "1ère réunion mensuelle tenue. Ordre du jour type défini. Reporting KPIs data instauré. 4 principes BCBS 239 passent conformes.", color: T.green, icon: ShieldCheck },
-        { titre: "Politiques data rédigées", detail: "Politique de Gouvernance v2.1, Standard de Classification v1.0 et Politique RGPD v2.0 validées et diffusées aux 6 directions.", color: T.amber, icon: FileText },
-      ],
-      3: [
-        { titre: "Collibra déployé", detail: "Data catalog opérationnel. 120 termes métier certifiés dans le glossaire. Scan automatique des 2 400 tables Snowflake configuré.", color: T.blue, icon: Database },
-        { titre: "Contrôles qualité automatisés", detail: "1 200 tests dbt et Great Expectations déployés sur les données critiques. KPI qualité moyen passe de 64% à 82% en 6 mois.", color: T.green, icon: TrendingUp },
-        { titre: "DWH Snowflake opérationnel", detail: "Architecture gold/silver/raw déployée. 12 datasets certifiés. Premiers dashboards Power BI Risk et Finance alimentés par le DWH.", color: T.purple, icon: Database },
-      ],
-      4: [
-        { titre: "MDM Semarchy déployé", detail: "3,1M clients dédupliqués. Golden record unifié entre CRM, Core Banking et Risques. Cohérence données Clients : 71% → 91%.", color: T.green, icon: Database },
-        { titre: "Lineage BCBS 239 complet", detail: "14 données critiques tracées de bout en bout (source → régulateur). Pipeline COREP/FINREP automatisé vers la BCE. Délai : 48h → 4h.", color: T.blue, icon: GitBranch },
-        { titre: "10/14 principes BCBS conformes", detail: "Validation par l'équipe Conformité. Rapport BCBS 239 signé et transmis à la BCE. Inspection dans 6 mois abordée avec confiance.", color: T.amber, icon: ShieldCheck },
-      ],
-      5: [
-        { titre: "Registre IA complet", detail: "5 modèles inventoriés, classifiés EU AI Act et documentés. 3 modèles Risque Élevé avec supervision humaine obligatoire activée.", color: T.purple, icon: Brain },
-        { titre: "Monitoring drift opérationnel", detail: "Alertes automatiques configurées sur les 5 modèles. FraudDetector identifié en drift critique (3.7% > seuil 2.5%) → réentraînement lancé.", color: T.red, icon: Activity },
-        { titre: "13/14 principes BCBS conformes", detail: "Quasi-conformité atteinte. Accuracy moyenne des modèles IA : 83% → 93% grâce à la meilleure qualité des données d'entraînement.", color: T.green, icon: TrendingUp },
-      ],
-      6: [
-        { titre: "BCBS 239 : 14/14 conformes", detail: "Conformité totale validée lors de l'inspection BCE. Zéro finding majeur. FrontierBank peut reconstituer tout indicateur de risque en < 2h.", color: T.green, icon: ShieldCheck },
-        { titre: "400 collaborateurs formés", detail: "Programme Data Literacy déployé sur toutes les directions. 45 Data Stewards formés et autonomes. Culture data ancrée dans l'organisation.", color: T.blue, icon: Users },
-        { titre: "Maturité data : 4.0/5", detail: "Niveau Géré atteint sur 6/8 domaines. Programme clôturé avec succès. ROI estimé à 3,2x sur 3 ans. FrontierBank est autonome sur la gouvernance data.", color: T.amber, icon: Award },
-      ],
-    }[state.phase]?.map((item: { titre: string; detail: string; color: string; icon: any }, i: number) => {
-      const Icon = item.icon;
-      return (
-        <div key={i} style={{ background: "#f9fafd", border: `1px solid ${T.cardBorder}`, borderRadius: 12, padding: 18, borderTop: `3px solid ${item.color}` }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 10 }}>
-            <div style={{ width: 32, height: 32, borderRadius: 8, background: `${item.color}18`, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-              <Icon size={15} color={item.color} />
+          {/* Contexte */}
+          <div style={{ padding: 24, borderRight: isMobile ? "none" : `1px solid ${T.cardBorder}`, borderBottom: isMobile ? `1px solid ${T.cardBorder}` : "none" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 14 }}>
+              <div style={{ width: 32, height: 32, borderRadius: 8, background: T.blueSoft, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                <FileText size={15} color={T.blue} />
+              </div>
+              <p style={{ fontSize: 11, fontWeight: 700, color: T.blue, textTransform: "uppercase", letterSpacing: "0.07em", margin: 0, fontFamily: "'Kanit', sans-serif" }}>
+                {t.dashboard.mission_title}
+              </p>
             </div>
-            <p style={{ fontSize: 13, fontWeight: 700, color: T.textPrimary, margin: 0, fontFamily: "'Kanit', sans-serif", lineHeight: 1.3 }}>
-              {item.titre}
+            <p style={{ fontSize: 13, color: T.textPrimary, fontWeight: 600, marginBottom: 8, fontFamily: "'Kanit', sans-serif", lineHeight: 1.4 }}>
+              {t.dashboard.mission_client}
+            </p>
+            <p style={{ fontSize: 12, color: T.textSecondary, lineHeight: 1.7, margin: 0, fontFamily: "'Kanit', sans-serif" }}>
+              {t.dashboard.mission_desc}
             </p>
           </div>
-          <p style={{ fontSize: 12, color: T.textSecondary, lineHeight: 1.7, margin: 0, fontFamily: "'Kanit', sans-serif" }}>
-            {item.detail}
-          </p>
+
+          {/* Rôle consultant */}
+          <div style={{ padding: 24, borderRight: isMobile ? "none" : `1px solid ${T.cardBorder}`, borderBottom: isMobile ? `1px solid ${T.cardBorder}` : "none" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 14 }}>
+              <div style={{ width: 32, height: 32, borderRadius: 8, background: T.greenSoft, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                <Users size={15} color={T.green} />
+              </div>
+              <p style={{ fontSize: 11, fontWeight: 700, color: T.green, textTransform: "uppercase", letterSpacing: "0.07em", margin: 0, fontFamily: "'Kanit', sans-serif" }}>
+                {t.dashboard.consultant_title}
+              </p>
+            </div>
+            <p style={{ fontSize: 13, color: T.textPrimary, fontWeight: 600, marginBottom: 8, fontFamily: "'Kanit', sans-serif", lineHeight: 1.4 }}>
+              {t.dashboard.consultant_name}
+            </p>
+            <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+              {t.dashboard.consultant_actions.map((action, i) => (
+                <div key={i} style={{ display: "flex", alignItems: "flex-start", gap: 8 }}>
+                  <div style={{ width: 5, height: 5, borderRadius: "50%", background: T.green, marginTop: 6, flexShrink: 0 }} />
+                  <span style={{ fontSize: 12, color: T.textSecondary, lineHeight: 1.5, fontFamily: "'Kanit', sans-serif" }}>{action}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Ce que couvre le site */}
+          <div style={{ padding: 24 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 14 }}>
+              <div style={{ width: 32, height: 32, borderRadius: 8, background: T.purpleSoft, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                <LayoutGrid size={15} color={T.purple} />
+              </div>
+              <p style={{ fontSize: 11, fontWeight: 700, color: T.purple, textTransform: "uppercase", letterSpacing: "0.07em", margin: 0, fontFamily: "'Kanit', sans-serif" }}>
+                {t.dashboard.site_covers_title}
+              </p>
+            </div>
+            <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+              {t.dashboard.site_covers.map((item, i) => {
+                const colors = [T.blue, T.indigo, T.amber, T.green, T.purple, T.red, T.slate];
+                return (
+                  <div key={item.label} style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                    <div style={{ width: 6, height: 6, borderRadius: "50%", background: colors[i], flexShrink: 0 }} />
+                    <span style={{ fontSize: 12, fontWeight: 700, color: T.textPrimary, fontFamily: "'Kanit', sans-serif", minWidth: 90 }}>{item.label}</span>
+                    <span style={{ fontSize: 11, color: T.textMuted, fontFamily: "'Kanit', sans-serif" }}>{item.desc}</span>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
         </div>
-      );
-    })}
-  </div>
-</div>
+      </div>
+
+      {/* ── Ce qui a été fait ── */}
+      <div style={S.card}>
+        <SectionHeader
+          title={t.dashboard.done_title}
+          sub={t.dashboard.done_sub}
+          right={<span style={badge(T.blueSoft, T.blue, T.blueBorder)}>{t.common.phase} {state.phase} · {state.label}</span>}
+        />
+        <div style={S.row3}>
+          {doneItems.map((item, i) => {
+            const Icon = item.icon;
+            return (
+              <div key={i} style={{ background: "#f9fafd", border: `1px solid ${T.cardBorder}`, borderRadius: 12, padding: 18, borderTop: `3px solid ${item.color}` }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 10 }}>
+                  <div style={{ width: 32, height: 32, borderRadius: 8, background: `${item.color}18`, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                    <Icon size={15} color={item.color} />
+                  </div>
+                  <p style={{ fontSize: 13, fontWeight: 700, color: T.textPrimary, margin: 0, fontFamily: "'Kanit', sans-serif", lineHeight: 1.3 }}>
+                    {item.titre}
+                  </p>
+                </div>
+                <p style={{ fontSize: 12, color: T.textSecondary, lineHeight: 1.7, margin: 0, fontFamily: "'Kanit', sans-serif" }}>
+                  {item.detail}
+                </p>
+              </div>
+            );
+          })}
+        </div>
+      </div>
 
       {/* ── 4 KPI cards ── */}
       <div style={S.row4}>
         {[
-          {
-            Icon: Activity,    iconBg: T.blueSoft,   iconColor: T.blue,
-            value: `${avgMaturity}/5`,
-            label: "Maturité Data globale",
-            sub: "Score moyen sur 8 domaines DAMA-DMBOK",
-            badgeTxt: parseFloat(avgMaturity) < 2 ? "Niveau initial" : parseFloat(avgMaturity) < 3 ? "En progression" : parseFloat(avgMaturity) < 4 ? "Niveau défini" : "Niveau géré",
-            badgeBg: parseFloat(avgMaturity) < 2 ? T.amberSoft : parseFloat(avgMaturity) < 3 ? T.blueSoft : T.greenSoft,
-            badgeColor: parseFloat(avgMaturity) < 2 ? T.amber : parseFloat(avgMaturity) < 3 ? T.blue : T.green,
-            badgeBorder: parseFloat(avgMaturity) < 2 ? T.amberBorder : parseFloat(avgMaturity) < 3 ? T.blueBorder : T.greenBorder,
-          },
-          {
-            Icon: ShieldCheck, iconBg: T.greenSoft,  iconColor: T.green,
-            value: `${compliant}/14`,
-            label: "Principes BCBS 239 conformes",
-            sub: `${compliant} conformes · ${partial} partiels · ${nonCompliant} non conformes`,
-            badgeTxt: compliant < 4 ? "Critique" : compliant < 10 ? "En cours" : compliant < 14 ? "Presque" : "Conforme",
-            badgeBg: compliant < 4 ? T.redSoft : compliant < 10 ? T.amberSoft : T.greenSoft,
-            badgeColor: compliant < 4 ? T.red : compliant < 10 ? T.amber : T.green,
-            badgeBorder: compliant < 4 ? T.redBorder : compliant < 10 ? T.amberBorder : T.greenBorder,
-          },
-          {
-            Icon: TrendingUp,  iconBg: T.blueSoft,   iconColor: T.blue,
-            value: `${state.stats.avgQuality}%`,
-            label: "KPI Qualité moyen",
-            sub: "Complétude · Exactitude · Fraîcheur · Cohérence",
-            badgeTxt: state.stats.avgQuality >= 90 ? "Objectif atteint" : state.stats.avgQuality >= 80 ? "En progression" : "À améliorer",
-            badgeBg: state.stats.avgQuality >= 90 ? T.greenSoft : state.stats.avgQuality >= 80 ? T.blueSoft : T.amberSoft,
-            badgeColor: state.stats.avgQuality >= 90 ? T.green : state.stats.avgQuality >= 80 ? T.blue : T.amber,
-            badgeBorder: state.stats.avgQuality >= 90 ? T.greenBorder : state.stats.avgQuality >= 80 ? T.blueBorder : T.amberBorder,
-          },
-          {
-            Icon: Brain,       iconBg: T.purpleSoft, iconColor: T.purple,
-            value: `${state.stats.aiValidated}/5`,
-            label: "Modèles IA validés",
-            sub: `${aiModels.filter(m => m.status === "in_review").length} en review · ${aiModels.filter(m => m.status === "pending").length} en attente`,
-            badgeTxt: "EU AI Act",
-            badgeBg: T.purpleSoft, badgeColor: T.purple, badgeBorder: T.purpleBorder,
-          },
+          { Icon: Activity,    iconBg: T.blueSoft,   iconColor: T.blue,
+            value: `${avgMaturity}/5`, label: t.dashboard.kpi_maturity, sub: t.dashboard.kpi_maturity_sub,
+            badgeBg: mb.bg, badgeColor: mb.color, badgeBorder: mb.border, badgeTxt: mb.txt },
+          { Icon: ShieldCheck, iconBg: T.greenSoft,  iconColor: T.green,
+            value: `${compliant}/14`, label: t.dashboard.kpi_bcbs,
+            sub: `${compliant} ${t.common.compliant} · ${partial} ${t.common.partial} · ${nonCompliant} ${t.common.non_compliant}`,
+            badgeBg: bb.bg, badgeColor: bb.color, badgeBorder: bb.border, badgeTxt: bb.txt },
+          { Icon: TrendingUp,  iconBg: T.blueSoft,   iconColor: T.blue,
+            value: `${state.stats.avgQuality}%`, label: t.dashboard.kpi_quality, sub: t.dashboard.kpi_quality_sub,
+            badgeBg: qb.bg, badgeColor: qb.color, badgeBorder: qb.border, badgeTxt: qb.txt },
+          { Icon: Brain,       iconBg: T.purpleSoft, iconColor: T.purple,
+            value: `${state.stats.aiValidated}/5`, label: t.dashboard.kpi_ai,
+            sub: `${aiModels.filter(m => m.status === "in_review").length} ${t.common.in_review} · ${aiModels.filter(m => m.status === "pending").length} ${t.common.pending}`,
+            badgeBg: T.purpleSoft, badgeColor: T.purple, badgeBorder: T.purpleBorder, badgeTxt: "EU AI Act" },
         ].map(({ Icon, iconBg, iconColor, value, label, sub, badgeTxt, badgeBg, badgeColor, badgeBorder }) => (
           <div key={label} style={S.card}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 16 }}>
@@ -327,17 +315,17 @@ export default function DashboardPage() {
       {/* ── Radar maturité ── */}
       <div style={S.card}>
         <SectionHeader
-          title="Radar de Maturité Data"
-          sub="Positionnement actuel de FrontierBank vs. cible DAMA-DMBOK sur 8 domaines — Score sur 5"
-          right={<span style={badge(T.slateSoft, T.slate, T.slateBorder)}>8 domaines</span>}
+          title={t.dashboard.radar_title}
+          sub={t.dashboard.radar_sub}
+          right={<span style={badge(T.slateSoft, T.slate, T.slateBorder)}>8 {t.common.domain}s</span>}
         />
         <div style={{ background: "#f4f6fb", borderRadius: 10, padding: "16px 0", border: `1px solid ${T.cardBorder}` }}>
           <ResponsiveContainer width="100%" height={320}>
             <RadarChart data={radarData} margin={{ top: 20, right: 50, bottom: 20, left: 50 }}>
               <PolarGrid stroke={T.cardBorder} />
               <PolarAngleAxis dataKey="domain" tick={{ fill: T.textSecondary, fontSize: 12, fontFamily: "Kanit" }} />
-              <Radar name="Cible"  dataKey="Cible"  stroke={T.slateBorder} strokeWidth={1.5} fill={T.slateSoft}  fillOpacity={0.8} />
-              <Radar name="Actuel" dataKey="Actuel" stroke={T.blue}        strokeWidth={2}   fill={T.blue}        fillOpacity={0.2} />
+              <Radar name={t.common.target}  dataKey="Cible"  stroke={T.slateBorder} strokeWidth={1.5} fill={T.slateSoft}  fillOpacity={0.8} />
+              <Radar name={t.common.current} dataKey="Actuel" stroke={T.blue}        strokeWidth={2}   fill={T.blue}        fillOpacity={0.2} />
               <Legend wrapperStyle={{ fontSize: 12, color: T.textMuted, fontFamily: "Kanit" }} />
               <Tooltip content={<ChartTooltip />} />
             </RadarChart>
@@ -346,11 +334,11 @@ export default function DashboardPage() {
         <div style={S.insight(T.amberSoft, T.amberBorder)}>
           <Info size={14} color={T.amber} style={{ flexShrink: 0, marginTop: 1 }} />
           <p style={{ fontSize: 12, color: "#78350f", lineHeight: 1.7, fontFamily: "'Kanit', sans-serif" }}>
-            <strong>Lecture :</strong> La zone bleue représente le niveau actuel de FrontierBank à la <strong>Phase {state.phase}</strong>.
-            L'écart avec la zone grise identifie les chantiers prioritaires restants.
-            {state.phase < 4 && <> Les domaines <strong>Data Lineage</strong> et <strong>IA Governance</strong> sont les plus critiques.</>}
-            {state.phase >= 4 && state.phase < 6 && <> La progression est nette sur le Lineage et le Management. L'Acculturation reste à consolider.</>}
-            {state.phase === 6 && <> FrontierBank atteint le niveau 4 (Géré) sur la majorité des domaines. Objectif atteint.</>}
+            <strong>{t.common.reading} :</strong>{" "}
+            {t.dashboard.radar_insight.replace("{phase}", String(state.phase))}
+            {state.phase < 4 && t.dashboard.radar_insight_critical}
+            {state.phase >= 4 && state.phase < 6 && t.dashboard.radar_insight_progress}
+            {state.phase === 6 && t.dashboard.radar_insight_done}
           </p>
         </div>
       </div>
@@ -358,9 +346,9 @@ export default function DashboardPage() {
       {/* ── KPI évolution ── */}
       <div style={S.card}>
         <SectionHeader
-          title="Évolution des KPIs Qualité des Données"
-          sub="Progression mensuelle des 4 dimensions qualité depuis le lancement du programme — en %"
-          right={<span style={badge(T.greenSoft, T.green, T.greenBorder)}>Tendance positive</span>}
+          title={t.dashboard.kpi_chart_title}
+          sub={t.dashboard.kpi_chart_sub}
+          right={<span style={badge(T.greenSoft, T.green, T.greenBorder)}>{t.dashboard.kpi_trend_badge}</span>}
         />
         <div style={{ background: "#f4f6fb", borderRadius: 10, padding: "16px 16px 8px", border: `1px solid ${T.cardBorder}` }}>
           <ResponsiveContainer width="100%" height={300}>
@@ -370,22 +358,22 @@ export default function DashboardPage() {
               <YAxis domain={[55, 100]} tick={{ fill: T.textMuted, fontSize: 12, fontFamily: "Kanit" }} axisLine={false} tickLine={false} unit="%" />
               <Tooltip content={<ChartTooltip />} />
               <Legend wrapperStyle={{ fontSize: 12, color: T.textMuted, fontFamily: "Kanit", paddingTop: 12 }} />
-              <Line dataKey="completeness" stroke={T.blue}   strokeWidth={2.5} dot={false} name="Complétude" />
-              <Line dataKey="accuracy"     stroke={T.green}  strokeWidth={2.5} dot={false} name="Exactitude" />
-              <Line dataKey="freshness"    stroke={T.purple} strokeWidth={2.5} dot={false} name="Fraîcheur"  />
-              <Line dataKey="consistency"  stroke={T.amber}  strokeWidth={2.5} dot={false} name="Cohérence"  />
+              <Line dataKey="completeness" stroke={T.blue}   strokeWidth={2.5} dot={false} name={t.qualite.dim_completeness.label} />
+              <Line dataKey="accuracy"     stroke={T.green}  strokeWidth={2.5} dot={false} name={t.qualite.dim_accuracy.label}     />
+              <Line dataKey="freshness"    stroke={T.purple} strokeWidth={2.5} dot={false} name={t.qualite.dim_freshness.label}    />
+              <Line dataKey="consistency"  stroke={T.amber}  strokeWidth={2.5} dot={false} name={t.qualite.dim_consistency.label}  />
             </LineChart>
           </ResponsiveContainer>
         </div>
         <div style={S.insight(T.greenSoft, T.greenBorder)}>
           <Info size={14} color={T.green} style={{ flexShrink: 0, marginTop: 1 }} />
           <p style={{ fontSize: 12, color: "#065f46", lineHeight: 1.7, fontFamily: "'Kanit', sans-serif" }}>
-            <strong>Insight Phase {state.phase} :</strong>{" "}
-            {state.phase <= 2 && "Les KPIs sont en phase de baseline. Les contrôles qualité ne sont pas encore automatisés — les données sont collectées manuellement."}
-            {state.phase === 3 && <>La Cohérence reste le point faible à <strong>81%</strong>. Elle est directement liée à l'absence de MDM sur les données clients — chantier prévu en Phase 4.</>}
-            {state.phase === 4 && <>Le déploiement du MDM fait bondir la Cohérence de <strong>+12 points</strong>. L'Exactitude progresse grâce au data lineage qui identifie les sources de dégradation.</>}
-            {state.phase === 5 && <>Tous les KPIs dépassent <strong>90%</strong>. La gouvernance des modèles IA contribue à la qualité des données d'entraînement.</>}
-            {state.phase === 6 && <>Objectif atteint : moyenne <strong>95%+</strong>. Le programme de Data Literacy a généré une culture de la qualité data dans toutes les directions.</>}
+            <strong>{t.common.insight} Phase {state.phase} :</strong>{" "}
+            {state.phase <= 2 && t.qualite.insight_p1}
+            {state.phase === 3 && t.qualite.insight_p3}
+            {state.phase === 4 && t.qualite.insight_p4}
+            {state.phase === 5 && t.qualite.insight_p5}
+            {state.phase === 6 && t.qualite.insight_p6}
           </p>
         </div>
       </div>
@@ -393,20 +381,21 @@ export default function DashboardPage() {
       {/* ── Feuille de route ── */}
       <div style={S.card}>
         <SectionHeader
-          title="Feuille de Route du Programme"
-          sub="6 phases de transformation · Jan 2026 – Déc 2026 · Pilotée par le CDO et le cabinet de conseil"
-          right={<span style={badge(T.blueSoft, T.blue, T.blueBorder)}>Phase {state.phase} active</span>}
+          title={t.dashboard.roadmap_title}
+          sub={t.dashboard.roadmap_sub}
+          right={<span style={badge(T.blueSoft, T.blue, T.blueBorder)}>{t.common.phase} {state.phase} {t.common.active}</span>}
         />
-        <div style={{ display: "grid", gridTemplateColumns: cols(6, 3, 2), gap: 14 }}>
+        <div style={S.row6}>
           {ROADMAP.map((r, idx) => {
             const phaseState = idx + 1 < state.phase ? "done" : idx + 1 === state.phase ? "in_progress" : "planned";
             const s = ROAD_STATUS[phaseState];
+            const statusLabel = phaseState === "done" ? t.common.done : phaseState === "in_progress" ? t.common.in_progress : t.common.planned;
             return (
               <div key={r.phase} style={{ background: s.bg, border: `1px solid ${s.border}`, borderRadius: 12, padding: 16 }}>
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}>
-                  <span style={{ fontSize: 11, fontWeight: 700, color: s.color, fontFamily: "'Kanit', sans-serif" }}>Phase {r.phase}</span>
+                  <span style={{ fontSize: 11, fontWeight: 700, color: s.color, fontFamily: "'Kanit', sans-serif" }}>{t.common.phase} {r.phase}</span>
                   <span style={{ fontSize: 10, fontWeight: 600, color: s.color, background: T.cardBg, border: `1px solid ${s.border}`, borderRadius: 9999, padding: "2px 8px", fontFamily: "'Kanit', sans-serif" }}>
-                    {s.label}
+                    {statusLabel}
                   </span>
                 </div>
                 <p style={{ fontSize: 12, fontWeight: 700, color: T.textPrimary, marginBottom: 4, lineHeight: 1.3, fontFamily: "'Kanit', sans-serif" }}>{r.label}</p>
@@ -418,7 +407,7 @@ export default function DashboardPage() {
                       <span style={{ fontSize: 11, color: T.textSecondary, lineHeight: 1.4, fontFamily: "'Kanit', sans-serif" }}>{item}</span>
                     </div>
                   ))}
-                  {r.items.length > 3 && <p style={{ fontSize: 11, color: T.textMuted, fontFamily: "'Kanit', sans-serif" }}>+{r.items.length - 3} livrables</p>}
+                  {r.items.length > 3 && <p style={{ fontSize: 11, color: T.textMuted, fontFamily: "'Kanit', sans-serif" }}>+{r.items.length - 3} {t.common.see_more}</p>}
                 </div>
               </div>
             );
@@ -429,13 +418,13 @@ export default function DashboardPage() {
       {/* ── BCBS 239 ── */}
       <div style={S.card}>
         <SectionHeader
-          title="Conformité BCBS 239"
-          sub="Évaluation des 14 principes du Comité de Bâle sur l'agrégation des données de risque et le reporting réglementaire"
+          title={t.dashboard.bcbs_title}
+          sub={t.dashboard.bcbs_sub}
           right={
             <div style={{ display: "flex", gap: 8, flexShrink: 0 }}>
-              <span style={badge(T.greenSoft, T.green, T.greenBorder)}>{compliant} conformes</span>
-              <span style={badge(T.amberSoft, T.amber, T.amberBorder)}>{partial} partiels</span>
-              <span style={badge(T.redSoft,   T.red,   T.redBorder)}  >{nonCompliant} non conf.</span>
+              <span style={badge(T.greenSoft, T.green, T.greenBorder)}>{compliant} {t.common.compliant}</span>
+              <span style={badge(T.amberSoft, T.amber, T.amberBorder)}>{partial} {t.common.partial}</span>
+              <span style={badge(T.redSoft,   T.red,   T.redBorder)}  >{nonCompliant} {t.common.non_compliant}</span>
             </div>
           }
         />
@@ -446,16 +435,16 @@ export default function DashboardPage() {
             <div style={{ width: `${(nonCompliant/14)*100}%`, background: T.red,   transition: "width 0.8s ease" }} />
           </div>
           <p style={{ fontSize: 12, color: T.textMuted, fontFamily: "'Kanit', sans-serif" }}>
-            Taux de conformité global : <strong style={{ color: T.textPrimary }}>{Math.round((compliant/14)*100)}%</strong>
-            &nbsp;·&nbsp;Cible fin 2026 : <strong style={{ color: T.textPrimary }}>100%</strong>
+            {t.dashboard.bcbs_rate} : <strong style={{ color: T.textPrimary }}>{Math.round((compliant/14)*100)}%</strong>
+            &nbsp;·&nbsp;{t.dashboard.bcbs_target} : <strong style={{ color: T.textPrimary }}>100%</strong>
           </p>
         </div>
         <div style={{ display: "grid", gridTemplateColumns: cols(2, 1, 1), gap: 8 }}>
           {bcbsPrinciples.map(p => {
             const cfgMap = {
-              compliant:     { Icon: CheckCircle2,  color: T.green, bg: T.greenSoft, border: T.greenBorder, label: "Conforme"     },
-              partial:       { Icon: AlertTriangle, color: T.amber, bg: T.amberSoft, border: T.amberBorder, label: "Partiel"      },
-              non_compliant: { Icon: AlertTriangle, color: T.red,   bg: T.redSoft,   border: T.redBorder,   label: "Non conforme" },
+              compliant:     { Icon: CheckCircle2,  color: T.green, bg: T.greenSoft, border: T.greenBorder, label: t.common.compliant     },
+              partial:       { Icon: AlertTriangle, color: T.amber, bg: T.amberSoft, border: T.amberBorder, label: t.common.partial       },
+              non_compliant: { Icon: AlertTriangle, color: T.red,   bg: T.redSoft,   border: T.redBorder,   label: t.common.non_compliant },
             };
             const cfg = cfgMap[p.status as keyof typeof cfgMap];
             const { Icon } = cfg;

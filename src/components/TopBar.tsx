@@ -2,20 +2,12 @@
 
 import { usePathname } from "next/navigation";
 import { T, badge } from "@/lib/theme";
-import { Bell, Settings, Calendar } from "lucide-react";
 import PhaseSelector from "./PhaseSelector";
+import LanguageToggle from "./LanguageToggle";
 import { useResponsive } from "@/lib/useResponsive";
-
-const PAGE_TITLES: Record<string, { title: string; desc: string }> = {
-  "/":              { title: "Vue d'ensemble",        desc: "Dashboard exécutif — Programme Gouvernance Data & IA · FrontierBank" },
-  "/diagnostic":    { title: "Diagnostic Maturité",   desc: "Évaluation DAMA-DMBOK · Niveaux actuels vs cibles stratégiques"      },
-  "/gouvernance":   { title: "Framework Gouvernance", desc: "Rôles · Politiques · Matrice RACI"                                    },
-  "/catalog":       { title: "Data Catalog",          desc: "Glossaire métier · Référentiels · Métadonnées"                        },
-  "/qualite":       { title: "Data Quality",          desc: "KPIs qualité · Conformité BCBS 239 · Plans de remédiation"            },
-  "/lineage":       { title: "Data Lineage",          desc: "Traçabilité des flux de données · Données critiques"                  },
-  "/ia-governance": { title: "IA Governance",         desc: "Registre modèles · Classification EU AI Act · Model Risk"             },
-  "/comex":         { title: "Rapport Comex",         desc: "Synthèse exécutive · Tableau de bord Direction Générale"              },
-};
+import { useLang } from "@/lib/LanguageContext";
+import { useProjectStore } from "@/lib/useProjectState";
+import { TIMELINE } from "@/lib/timeline";
 
 const btnStyle: React.CSSProperties = {
   width: 32, height: 32, borderRadius: 8,
@@ -27,13 +19,26 @@ const btnStyle: React.CSSProperties = {
 
 export default function TopBar() {
   const path = usePathname();
-  const meta = PAGE_TITLES[path] ?? { title: "FinanceDataHub", desc: "" };
+  const { t } = useLang();
   const { isMobile, isTablet } = useResponsive();
+  const { currentPhase } = useProjectStore();
   const isNarrow = isMobile || isTablet;
+
+  const PAGE_TITLES: Record<string, { title: string; desc: string }> = {
+    "/":              t.topbar.overview,
+    "/diagnostic":    t.topbar.diagnostic,
+    "/gouvernance":   t.topbar.gouvernance,
+    "/catalog":       t.topbar.catalog,
+    "/qualite":       t.topbar.qualite,
+    "/lineage":       t.topbar.lineage,
+    "/ia-governance": t.topbar.ia,
+    "/comex":         t.topbar.comex,
+  };
+
+  const meta = PAGE_TITLES[path] ?? { title: "FinanceDataHub", desc: "" };
 
   return (
     <>
-      {/* ── Barre principale ── */}
       <header style={{
         height: 56,
         display: "flex",
@@ -45,84 +50,43 @@ export default function TopBar() {
         flexShrink: 0,
         gap: 12,
       }}>
-
-        {/* Titre page */}
+        {/* Titre */}
         <div style={{ minWidth: 0, flexShrink: 1 }}>
-          <h1 style={{
-            fontSize: isNarrow ? 13 : 15,
-            fontWeight: 700,
-            color: T.textPrimary,
-            fontFamily: "'Kanit', sans-serif",
-            margin: 0,
-            whiteSpace: "nowrap",
-            overflow: "hidden",
-            textOverflow: "ellipsis",
-          }}>
+          <h1 style={{ fontSize: isNarrow ? 13 : 15, fontWeight: 700, color: T.textPrimary, fontFamily: "'Kanit', sans-serif", margin: 0, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
             {meta.title}
           </h1>
           {!isMobile && (
-            <p style={{
-              fontSize: 11,
-              color: T.textMuted,
-              fontFamily: "'Kanit', sans-serif",
-              margin: 0,
-              whiteSpace: "nowrap",
-              overflow: "hidden",
-              textOverflow: "ellipsis",
-            }}>
+            <p style={{ fontSize: 11, color: T.textMuted, fontFamily: "'Kanit', sans-serif", margin: 0, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
               {meta.desc}
             </p>
           )}
         </div>
 
-        {/* Phase selector — desktop uniquement dans la topbar */}
+        {/* Phase selector — desktop */}
         {!isNarrow && (
           <div style={{ flex: 1, display: "flex", justifyContent: "center" }}>
             <PhaseSelector />
           </div>
         )}
 
-        {/* Actions droite */}
+        {/* Indicateur phase active + actions */}
         <div style={{ display: "flex", alignItems: "center", gap: 8, flexShrink: 0 }}>
           {!isMobile && (
-            <div style={{
-              display: "flex", alignItems: "center", gap: 6,
-              padding: "5px 12px", borderRadius: 8,
-              background: T.cardBg, border: `1px solid ${T.cardBorder}`,
-            }}>
-              <Calendar size={12} color={T.textMuted} />
-              <span style={{
-                fontSize: 12, fontWeight: 500,
-                color: T.textSecondary,
-                fontFamily: "'Kanit', sans-serif",
-              }}>
-                2026
+            <div style={{ display: "flex", alignItems: "center", gap: 8, padding: "6px 14px", borderRadius: 20, background: T.blueSoft, border: `1px solid ${T.blueBorder}` }}>
+              <div style={{ width: 7, height: 7, borderRadius: "50%", background: T.blue }} />
+              <span style={{ fontSize: 12, fontWeight: 600, color: T.blue, fontFamily: "'Kanit', sans-serif", whiteSpace: "nowrap" }}>
+                {t.common.phase} {currentPhase} · {TIMELINE[currentPhase - 1]?.label}
               </span>
             </div>
           )}
-          <span style={badge(T.blueSoft, T.blue, T.blueBorder)}>v1.0</span>
-          {!isMobile && (
-            <button style={btnStyle}>
-              <Bell size={13} color={T.textMuted} />
-            </button>
-          )}
-          {!isMobile && (
-            <button style={btnStyle}>
-              <Settings size={13} color={T.textMuted} />
-            </button>
-          )}
+          <LanguageToggle />
+          <span style={badge(T.blueSoft, T.blue, T.blueBorder)}>2026</span>
         </div>
       </header>
 
-      {/* ── Sélecteur de phase sur mobile — bande séparée sous la topbar ── */}
+      {/* Sélecteur de phase sur mobile */}
       {isMobile && (
-        <div style={{
-          padding: "8px 12px 8px 60px",
-          background: "#f7f8fc",
-          borderBottom: `1px solid ${T.cardBorder}`,
-          overflowX: "auto",
-          flexShrink: 0,
-        }}>
+        <div style={{ padding: "8px 12px 8px 60px", background: "#f7f8fc", borderBottom: `1px solid ${T.cardBorder}`, overflowX: "auto", flexShrink: 0 }}>
           <PhaseSelector />
         </div>
       )}

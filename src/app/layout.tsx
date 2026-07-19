@@ -3,6 +3,7 @@ import "./globals.css";
 import Sidebar from "@/components/Sidebar";
 import TopBar from "@/components/TopBar";
 import MainWrapper from "@/components/MainWrapper";
+import { LanguageProvider } from "@/lib/LanguageContext";
 
 export const metadata: Metadata = {
   title: "FinanceDataHub — Gouvernance Data & IA",
@@ -32,22 +33,24 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         />
       </head>
       <body>
-        <div style={{ display: "flex", height: "100vh", overflow: "hidden" }}>
-          <Sidebar />
-          <MainWrapper>
-            <TopBar />
-            <main
-              id="main-scroll"
-              style={{
-                flex: 1,
-                overflowY: "auto",
-                background: "#f0f2f7",
-              }}
-            >
-              {children}
-            </main>
-          </MainWrapper>
-        </div>
+        <LanguageProvider>
+          <div style={{ display: "flex", height: "100vh", overflow: "hidden" }}>
+            <Sidebar />
+            <MainWrapper>
+              <TopBar />
+              <main
+                id="main-scroll"
+                style={{
+                  flex: 1,
+                  overflowY: "auto",
+                  background: "#f0f2f7",
+                }}
+              >
+                {children}
+              </main>
+            </MainWrapper>
+          </div>
+        </LanguageProvider>
       </body>
     </html>
   );

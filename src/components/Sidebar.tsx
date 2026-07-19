@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { T } from "@/lib/theme";
 import { useResponsive } from "@/lib/useResponsive";
+import { useLang } from "@/lib/LanguageContext";
 import { useState, useEffect } from "react";
 import {
   LayoutDashboard, Activity, ShieldCheck, Database,
@@ -11,25 +12,20 @@ import {
   Menu, X
 } from "lucide-react";
 
-const NAV = [
-  { href: "/",              icon: LayoutDashboard, label: "Vue d'ensemble",   sub: "Dashboard exécutif"   },
-  { href: "/diagnostic",    icon: Activity,        label: "Diagnostic",       sub: "Maturité DAMA-DMBOK"  },
-  { href: "/gouvernance",   icon: ShieldCheck,     label: "Gouvernance",      sub: "RACI · Politiques"    },
-  { href: "/catalog",       icon: Database,        label: "Data Catalog",     sub: "Métadonnées · Glossaire" },
-  { href: "/qualite",       icon: TrendingUp,      label: "Data Quality",     sub: "KPIs · BCBS 239"      },
-  { href: "/lineage",       icon: GitBranch,       label: "Data Lineage",     sub: "Flux · Traçabilité"   },
-  { href: "/ia-governance", icon: Brain,           label: "IA Governance",    sub: "EU AI Act · Registre" },
-  { href: "/comex",         icon: FileText,        label: "Comex Report",     sub: "Synthèse Direction"   },
-];
+function SidebarContent({ path, onNavClick }: { path: string; onNavClick?: () => void }) {
+  const { t } = useLang();
 
-// ── Contenu interne réutilisable ──────────────────────────────────────────────
-function SidebarContent({
-  path,
-  onNavClick,
-}: {
-  path: string;
-  onNavClick?: () => void;
-}) {
+  const NAV = [
+    { href: "/",              icon: LayoutDashboard, label: t.nav.overview,    sub: t.nav.overview_sub    },
+    { href: "/diagnostic",    icon: Activity,        label: t.nav.diagnostic,  sub: t.nav.diagnostic_sub  },
+    { href: "/gouvernance",   icon: ShieldCheck,     label: t.nav.gouvernance, sub: t.nav.gouvernance_sub },
+    { href: "/catalog",       icon: Database,        label: t.nav.catalog,     sub: t.nav.catalog_sub     },
+    { href: "/qualite",       icon: TrendingUp,      label: t.nav.qualite,     sub: t.nav.qualite_sub     },
+    { href: "/lineage",       icon: GitBranch,       label: t.nav.lineage,     sub: t.nav.lineage_sub     },
+    { href: "/ia-governance", icon: Brain,           label: t.nav.ia,          sub: t.nav.ia_sub          },
+    { href: "/comex",         icon: FileText,        label: t.nav.comex,       sub: t.nav.comex_sub       },
+  ];
+
   return (
     <>
       {/* Logo */}
@@ -88,125 +84,68 @@ function SidebarContent({
         })}
       </nav>
 
-      {/* Footer — remplace "Ton Nom" par ton vrai nom ici */}
+      {/* Footer */}
       <div style={{ padding: "16px 20px", borderTop: "1px solid rgba(255,255,255,0.08)" }}>
         <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6 }}>
           <div style={{ width: 7, height: 7, borderRadius: "50%", background: "#0e9f6e" }} />
           <span style={{ fontSize: 11, color: "rgba(255,255,255,0.35)", fontFamily: "'Kanit', sans-serif" }}>
-            Mission active
+            {t.nav.mission_active}
           </span>
         </div>
         <p style={{ fontSize: 13, fontWeight: 600, color: "rgba(255,255,255,0.7)", fontFamily: "'Kanit', sans-serif", margin: 0 }}>
-          Heykel HACHICHE {/* ← REMPLACE PAR TON NOM */}
+          Rigobert Hachiche
         </p>
         <p style={{ fontSize: 11, color: "rgba(255,255,255,0.3)", fontFamily: "'Kanit', sans-serif", margin: 0 }}>
-          Consultant Data & IA
+          {t.nav.consultant_title}
         </p>
       </div>
     </>
   );
 }
 
-// ── Composant principal ───────────────────────────────────────────────────────
 export default function Sidebar() {
   const path = usePathname();
   const { isMobile, isTablet, mounted } = useResponsive();
   const [mobileOpen, setMobileOpen] = useState(false);
-
   const isNarrow = isMobile || isTablet;
 
-  // Ferme la sidebar quand on change de route sur mobile
-  useEffect(() => {
-    setMobileOpen(false);
-  }, [path]);
+  useEffect(() => { setMobileOpen(false); }, [path]);
+  useEffect(() => { if (!isNarrow) setMobileOpen(false); }, [isNarrow]);
 
-  // Ferme la sidebar si on passe en desktop
-  useEffect(() => {
-    if (!isNarrow) setMobileOpen(false);
-  }, [isNarrow]);
-
-  // Avant hydration, on affiche la version desktop pour éviter le flash
   if (!mounted) {
     return (
-      <aside style={{
-        position: "fixed", left: 0, top: 0,
-        height: "100vh", width: 240,
-        display: "flex", flexDirection: "column", zIndex: 40,
-        background: T.sidebarBg,
-      }}>
+      <aside style={{ position: "fixed", left: 0, top: 0, height: "100vh", width: 240, display: "flex", flexDirection: "column", zIndex: 40, background: T.sidebarBg }}>
         <SidebarContent path={path} />
       </aside>
     );
   }
 
-  // ── Version mobile / tablette ──
   if (isNarrow) {
     return (
       <>
-        {/* Bouton hamburger */}
         <button
           onClick={() => setMobileOpen(prev => !prev)}
-          style={{
-            position: "fixed", top: 10, left: 10, zIndex: 200,
-            width: 40, height: 40, borderRadius: 10,
-            background: T.sidebarBg,
-            border: "1px solid rgba(255,255,255,0.15)",
-            display: "flex", alignItems: "center", justifyContent: "center",
-            cursor: "pointer", boxShadow: "0 2px 12px rgba(0,0,0,0.3)",
-          }}
+          style={{ position: "fixed", top: 10, left: 10, zIndex: 200, width: 40, height: 40, borderRadius: 10, background: T.sidebarBg, border: "1px solid rgba(255,255,255,0.15)", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", boxShadow: "0 2px 12px rgba(0,0,0,0.3)" }}
         >
-          {mobileOpen
-            ? <X size={18} color="white" />
-            : <Menu size={18} color="white" />
-          }
+          {mobileOpen ? <X size={18} color="white" /> : <Menu size={18} color="white" />}
         </button>
 
-        {/* Overlay sombre derrière la sidebar */}
         {mobileOpen && (
           <div
             onClick={() => setMobileOpen(false)}
-            style={{
-              position: "fixed", inset: 0,
-              background: "rgba(0,0,0,0.55)",
-              zIndex: 98,
-              backdropFilter: "blur(2px)",
-            }}
+            style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.55)", zIndex: 98, backdropFilter: "blur(2px)" }}
           />
         )}
 
-        {/* Drawer sidebar */}
-        <aside
-          style={{
-            position: "fixed",
-            left: mobileOpen ? 0 : -260,
-            top: 0,
-            height: "100vh",
-            width: 240,
-            display: "flex",
-            flexDirection: "column",
-            zIndex: 99,
-            background: T.sidebarBg,
-            transition: "left 0.28s cubic-bezier(0.4, 0, 0.2, 1)",
-            boxShadow: mobileOpen ? "6px 0 32px rgba(0,0,0,0.4)" : "none",
-          }}
-        >
-          <SidebarContent
-            path={path}
-            onNavClick={() => setMobileOpen(false)}
-          />
+        <aside style={{ position: "fixed", left: mobileOpen ? 0 : -260, top: 0, height: "100vh", width: 240, display: "flex", flexDirection: "column", zIndex: 99, background: T.sidebarBg, transition: "left 0.28s cubic-bezier(0.4,0,0.2,1)", boxShadow: mobileOpen ? "6px 0 32px rgba(0,0,0,0.4)" : "none" }}>
+          <SidebarContent path={path} onNavClick={() => setMobileOpen(false)} />
         </aside>
       </>
     );
   }
 
-  // ── Version desktop — sidebar fixe ──
   return (
-    <aside style={{
-      position: "fixed", left: 0, top: 0,
-      height: "100vh", width: 240,
-      display: "flex", flexDirection: "column", zIndex: 40,
-      background: T.sidebarBg,
-    }}>
+    <aside style={{ position: "fixed", left: 0, top: 0, height: "100vh", width: 240, display: "flex", flexDirection: "column", zIndex: 40, background: T.sidebarBg }}>
       <SidebarContent path={path} />
     </aside>
   );
